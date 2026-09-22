@@ -1,0 +1,10 @@
+{
+  "op": "batch.execute",
+  "args": {
+    "maxCost": 10000,
+    "actions": [
+      {"action": "staffhire", "args": {"autoPosition": true, "staffType": 1, "costumeIndex": 0, "staffOrders": 3}},
+      {"action": "parksetentrancefee", "args": {"value": 100}}
+    ]
+  }
+}

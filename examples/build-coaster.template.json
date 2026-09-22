@@ -1,0 +1,10 @@
+{
+  "op": "coaster.build",
+  "args": {
+    "planId": "REPLACE_WITH_TRACK_PLAN_ID",
+    "maxCost": 100000,
+    "name": "Switchback Circuit",
+    "create": {"rideType": 0, "rideObject": 0, "entranceObject": 0, "colour1": 0, "colour2": 0, "inspectionInterval": 0},
+    "test": false
+  }
+}
