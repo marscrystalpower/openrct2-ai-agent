@@ -1,0 +1,34 @@
+{
+  "op": "track.plan",
+  "args": {
+    "start": {
+      "x": 2048,
+      "y": 2048,
+      "z": 64,
+      "direction": 0
+    },
+    "requireClosed": true,
+    "pieces": [
+      {
+        "type": "endStation",
+        "repeat": 2
+      },
+      "flatToRightBank",
+      {
+        "type": "bankedRightQuarterTurn5Tiles",
+        "repeat": 2
+      },
+      "rightBankToFlat",
+      {
+        "type": "flat",
+        "repeat": 2
+      },
+      "flatToRightBank",
+      {
+        "type": "bankedRightQuarterTurn5Tiles",
+        "repeat": 2
+      },
+      "rightBankToFlat"
+    ]
+  }
+}
