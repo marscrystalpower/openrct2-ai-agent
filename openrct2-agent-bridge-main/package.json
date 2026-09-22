@@ -1,8 +1,0 @@
-{
-  "name": "openrct2-agent-bridge",
-  "version": "0.1.0",
-  "private": true,
-  "license": "GPL-3.0-only",
-  "scripts": {"build": "node scripts/build.js", "test": "node --test test/*.test.js", "bridge": "node cli.js"},
-  "engines": {"node": ">=20"}
-}
