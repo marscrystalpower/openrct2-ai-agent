@@ -21,6 +21,8 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 - Batches can partially finish and do not roll back. Reconcile before further construction. Do not silently demolish partial work.
 - Close a ride twice and verify trains have been cleared before editing existing track. A first close can leave trains running.
 - Geometry closure is not physics proof. Use track.walk, run a full test train, inspect ratings/forces and capture a native screenshot before opening. Check queues, exits and actual guest access; adjacent tiles alone do not establish access.
+- Treat successful execution of a native placement command as evidence that the command was accepted, not proof that the resulting placement is valid according to normal in-game rules.
+- For ride entrances, exits, queues, paths, scenery, and other placed objects, verify that the final placement is legal and usable in the normal game configuration, not merely that the API accepted the coordinates.
 - Loaded objects can include unresearched rides. Respect research and scenario rules. Never enable cheats to bypass construction errors unless specifically requested.
 - When the user stops, stop issuing gameplay mutations. Use STOP when available; an in-flight action may finish. Do not resume a closed game to continue work.
 - Keep automated, mocked-engine, native, visual and physics evidence distinct. Do not claim every action or track type has been tested.
@@ -54,4 +56,4 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 
 ## Private files and sharing
 
-Never publish bridge.config.json, dist/, runtime/, vendor/, user-data/, logs/, sessions/, local saves, screenshots or credentials. The built plugin embeds a secret. Use scripts/Package-Source.ps1 to create an allowlisted source archive, then inspect it. Never upload an entire working installation. Keep LICENSE and upstream attribution. Publication requires the user's instruction; setup does not authorize it.
+Never publish bridge.config.json, dist/, runtime/, vendor/, user-data/, logs/, sessions/, local saves, screenshots or credentials. Keep the built plugin embeds a secret. Use scripts/Package-Source.ps1 to create an allowlisted source archive, then inspect it. Never upload an entire working installation. Keep LICENSE and upstream attribution. Publication requires the user's instruction; setup does not authorize it.
