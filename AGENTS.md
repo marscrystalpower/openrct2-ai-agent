@@ -29,11 +29,11 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 
 - Treat examples/custom-coaster-plan.json as a technical syntax reference, not as a recommended coaster layout or design template.
 - Do not precisely copy its station length, lift length, drop length, turn arrangement, straight sections, brake placement, footprint, or overall sequence merely because they appear in the example.
-- Before constructing a new coaster or tracked ride, develop an independent ride concept appropriate to the ride type, available land, terrain, budget, desired pacing, guest experience, capacity needs, and visual composition.
+- Before construction, identify several intentional ride moments appropriate to the ride type. These may come from drops, hills, airtime, inversions, helixes, photo sections, banked turns, tunnels, terrain interaction, water features, changes in speed, or other suitable elements.
 - Choose the station length, lifts, drops, helixes, curves, slopes, banking, on-ride photo sections, inversions, brakes, block sections, train configuration, and footprint based on that concept rather than inheriting them from the example.
 - A new coaster should normally be designed as a complete closed circuit unless the ride concept specifically calls for a legitimate non-circuit design such as a shuttle coaster. Do not use an open or incomplete track simply because the example permits it.
-- Do not begin a new coaster by treating the example blueprint as the starting layout and making small modifications to it. Create a new piece sequence based on the ride concept.
-- Variety is encouraged, but do not force novelty where it conflicts with terrain, safety, cost, capacity, or the intended ride experience. Compact, sprawling, symmetric, asymmetric, straight, curved, or highly irregular layouts are all valid when they serve the concept; none is the default.
+- Do not begin a new coaster by treating the example blueprint as the starting layout and making small modifications to it. Create a new piece sequence based on the ride concept. Small, compact designs are only encouraged when money is tight or space is limited.
+- Build a functioning ride quickly, but don't settle for the smallest technically valid design. Conservative, compact designs should only be used if space and money are an issue. A Junior Coaster might call for one or two drops, while a Wooden Coaster would likely need six or seven, for example.
 - After construction, evaluate the actual result rather than assuming the design is successful. Test the ride, inspect speed, forces, excitement, intensity, nausea, reliability and capacity, and use a native screenshot or other available visual inspection to assess the layout. Revise the design when the evidence indicates that revision is warranted.
 - Change the track colours and train colours if the design concept calls for it. Do not change the colour of every ride simply because it is encouraged. Multiple rides may share colours when those colours suit their themes.
 - Treat ride appearance and colour as part of the design rather than an afterthought. When the ride type supports recolouring, choose a deliberate colour scheme that complements the ride's name, concept, surrounding scenery, or park theme instead of automatically retaining the default colours.
@@ -41,6 +41,16 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 - Do not use one fixed colour scheme for every coaster. Variety is desirable, but colours should remain coherent with the individual ride and its surroundings.
 - If the available ride object or API does not support the desired appearance or colour options, use the supported options rather than attempting unsupported values.
 
+## Ride design philosophy
+
+- A ride that is technically complete is not automatically a successful design; you should prefer layouts with several distinct and intentional moments.
+- Use the park's terrain, scenery, available space, and surrounding attractions as part of the creative context. Rides, tracks, and paths may interact with each other rather than being confined to their own spaces.
+- Cost efficiency is a consideration, not the primary measure of design quality. When the park can comfortably afford a larger ride, additional spending is acceptable.
+- If money is available and profits are trending upward, build larger rides if space permits. Larger coasters should have more drops, block brakes to allow for more trains, inversions, and letting track crisscross over itself rather than aiming for a simple rectangle.
+- Design the footprint as part of the ride. Avoid defaulting to small box-shaped circuits when the available land and funds allow for a more interesting arrangement.
+- Do not require every ride to use the same elements. Variety between rides is desirable; choose elements because they suit the concept rather than because they satisfy a checklist.
+- Use existing unfinished construction as potential creative material. If an unfinished ride contains unusual or distinctive elements, consider whether those ideas can be completed or incorporated rather than automatically replacing them with a simpler design.
+- Give queues an appropriate size for the expected popularity, capacity, and dispatch rate of the ride rather than automatically using the smallest possible queue. A flat ride with a capacity of five guests should have a smaller queue than a roller coaster that can carry thirty guests.
 
 ## Private files and sharing
 
