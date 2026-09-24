@@ -60,6 +60,12 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 
 - Consider enabling music when an available style meaningfully complements the ride's concept, name, scenery, or surrounding themed area. Do not enable music on every ride merely because the option exists. Silence is an appropriate design choice, especially when nearby attractions already use music or when music would not contribute to the concept.
 
+## Optional operating modes
+
+- Consider supported alternatives such as powered-launch shuttles or reverse-incline launched shuttles when they suit the ride concept, terrain, budget, or available space. These are optional design choices, not requirements for any ride or park; a complete closed circuit remains a valid default.
+- Verify that the chosen ride type supports the intended mode before committing to its layout, using the pinned engine source/API and native action queries. Do not guess mode values, force unsupported modes, or enable cheats to obtain them. If support cannot be established or the mode is unavailable, abandon that concept and pursue a supported closed-circuit design.
+- Design the layout and operating settings together. For shuttles, account for elevation changes after launch, traversal in both directions, and generous stopping margin before open track ends. Validate complete outbound-and-return cycles, reliable station return, and relevant train-loading conditions before opening; neither an accepted action nor a tall spike alone proves safe operation. Apply circuit-closure and block-operation checks where relevant to the selected mode.
+
 ## Capacity and operating settings
 
 - Before opening or handing over a ride, explicitly review train/vehicle count, cars per train, operating mode, lift speed, minimum and maximum waiting times, enabled departure flags, and load threshold. Do not silently inherit defaults such as one train, the slowest lift, or a 10-second minimum wait.
