@@ -15,7 +15,22 @@
         function playable(){if(context.mode!=='normal' && context.mode!=='track_designer') error('Load a park first'); if(network.mode!=='none') error('Bridge supports single-player only');}
         function allowed(req){playable();if(!armed) error('Bridge is read-only; arm this session first');if(req.session!==session) error('Stale or missing session');}
         function pick(obj,keys){var result={};keys.forEach(function(k){try{if(obj[k]!==undefined){var v=obj[k];result[k]=(typeof v==='number' && !Number.isFinite(v)) || (typeof v==='number' && Math.abs(v)>Number.MAX_SAFE_INTEGER)?null:v;}}catch(e){result[k]=null;}});return result;}
-        function rideView(r){var result=pick(r,['id','type','name','classification','status','mode','price','excitement','intensity','nausea','vehicles','reliability','downtime','guestCount','incomePerHour','profit','totalCustomers','maxSpeed','averageSpeed','rideTime','rideLength','maxPositiveVerticalGs','maxNegativeVerticalGs','maxLateralGs','totalAirTime','numDrops','numLiftHills']);result.stations=(r.stations||[]).map(function(s,i){return Object.assign({index:i},pick(s,['start','length','entrance','exit','queueTime']));}).filter(function(s){return s.length>0;});return result;}
+        function musicView(r){
+            var state=pick(r,['flags','music']);
+            var result={musicEnabled:typeof state.flags==='number'?(state.flags & 0x2000)!==0:null,
+                musicObjectIndex:typeof state.music==='number'?state.music:null,musicIdentifier:null,musicName:null};
+            // Pinned v0.5.5 RideFlag::music is bit 13; music is a loaded object index.
+            if(result.musicObjectIndex!==null){
+                try{var object=objectManager.getObject('music',result.musicObjectIndex);
+                    if(object){var metadata=pick(object,['identifier','name']);
+                        if(typeof metadata.identifier==='string')result.musicIdentifier=metadata.identifier;
+                        if(typeof metadata.name==='string')result.musicName=metadata.name;
+                    }
+                }catch(e){/* Missing/unresolvable objects retain their raw index. */}
+            }
+            return result;
+        }
+        function rideView(r){var result=pick(r,['id','type','name','classification','status','mode','departFlags','minimumWaitingTime','maximumWaitingTime','liftHillSpeed','minLiftHillSpeed','maxLiftHillSpeed','price','excitement','intensity','nausea','vehicles','reliability','downtime','guestCount','incomePerHour','profit','totalCustomers','maxSpeed','averageSpeed','rideTime','rideLength','maxPositiveVerticalGs','maxNegativeVerticalGs','maxLateralGs','totalAirTime','numDrops','numLiftHills']);result.stations=(r.stations||[]).map(function(s,i){return Object.assign({index:i},pick(s,['start','length','entrance','exit','queueTime']));}).filter(function(s){return s.length>0;});return Object.assign(result,musicView(r));}
         function getRide(id){C.integer(id,'ride',0,65534);var r=map.getRide(id);if(!r)error('Ride does not exist');return r;}
         function segmentView(s){return Object.assign(pick(s,['type','description','beginZ','endZ','endX','endY','beginDirection','endDirection','beginSlope','endSlope','beginBank','endBank','length','elements','trackGroup','allowsChainLift','isInversion','isBanked','mirrorSegment']),{name:reverseNames[s.type]});}
         var reverseNames={};Object.keys(TRACK_NAMES).forEach(function(k){reverseNames[TRACK_NAMES[k]]=k;});
@@ -65,7 +80,7 @@
                 return {total:entities.length,offset:offset,entities:entities.slice(offset,offset+limit).map(function(e){var result=pick(e,['id','name','x','y','z','state','happiness','hunger','thirst','nausea','energy','cash','staffType','staffOrders','currentRide']);if(req.op==='guests')result.thoughts=(e.thoughts||[]).map(function(t){return pick(t,['type','item','freshness','freshTimeout']);});return result;})};
             }
             case 'objects':{
-                var types=['ride','station','footpath_surface','footpath_railings','footpath_addition','small_scenery','large_scenery','wall','terrain_surface','terrain_edge'];
+                var types=['music','ride','station','footpath_surface','footpath_railings','footpath_addition','small_scenery','large_scenery','wall','terrain_surface','terrain_edge'];
                 if(types.indexOf(a.type)<0)error('Supported object types: '+types.join(', '));
                 return objectManager.getAllObjects(a.type).map(function(o){return pick(o,['index','identifier','name','description','rideType','minCarsInTrain','maxCarsInTrain','carsPerFlatRide']);});
             }

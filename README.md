@@ -75,7 +75,7 @@ Use `action.execute` with the same action/args plus `maxCost` to execute; `batch
 5. Each action is queried immediately before execution. Later pieces depend on earlier ones, so there is no claim of an atomic full-layout preview. On failure, construction stops and reports the ride ID, completed actions, rejected step, and costs. Correct the problem and compile a plan for the missing portion after inspecting the result.
 6. Inspect map elements to find the first track tile's element index. `track.walk` takes `{x,y,elementIndex,limit}` in tile units; it follows the real engine track iterator to detect a circuit or gap.
 7. Connect entrance, exit, queue and ordinary paths. Example entrance entry: `{x:2016,y:2016,direction:1,station:0,isExit:false}`; these coordinates are illustrative, not validated against the sample. The engine determines entrance height from the station.
-8. Query and execute `ridesetstatus` with status 2 (testing). Let a train complete its circuit; inspect `ride` for speed, forces, excitement, intensity, nausea and reliability. Successful placement or setting the testing flag does not prove the train completes the circuit. Status 1 opens the ride only when ready.
+8. Configure capacity and dispatch deliberately using the operating workflow below, then query and execute `ridesetstatus` with status 2 (testing). Test the final train configuration; inspect `ride` for speed, forces, excitement, intensity, nausea and reliability. Successful placement or setting the testing flag does not prove the trains complete the circuit or restart after block stops. Status 1 opens the ride only when ready.
 
 Track-piece names come from generated/track-names.json. `track.catalog` supplies live geometry. The sample coordinates are illustrative and must be changed for the actual park. A physically slow or unsafe layout needs redesign even when it closes geometrically.
 
@@ -85,6 +85,32 @@ Track-piece names come from generated/track-names.json. `track.catalog` supplies
 - The included example is intentionally not a canonical ride. It should be treated like an API usage example rather than a blueprint to imitate. There is no required sequence of station → lift → drop → turns → straightaway → brakes.
 - When designing a coaster, first decide what kind of ride you are trying to create, then translate that concept into track pieces. Different rides may reasonably have different station lengths, elevations, lift arrangements, curves, inversions, brake sections, on-ride photo sections, underground segments, block sections, train configurations, footprints and pacing.
 - Use track.plan to verify the proposed geometry and the normal testing workflow to evaluate the finished ride. Geometry validation establishes track connectivity and footprint information; it does not establish that the resulting ride has appropriate physics, forces, ratings, capacity or guest access.
+
+## Capacity and operating settings
+
+Treat operation as part of the ride design. For a substantial compatible coaster, consider multiple trains when demand and traversal time justify the extra capacity, and plan any needed block sections before construction. Choose train count and block sections to suit the ride; they are not a universal requirement. Ordinary `brakes` regulate speed; `blockBrakes` are a different track piece. A final block section before the station is worth considering, with additional sections on a longer course where traversal times and restart geometry justify them. Select the compatible block-sectioned mode, configure trains, and verify the engine's actual allowed count. A long run of ordinary brakes does not provide block separation.
+
+Use `ride` or `rides` to inspect `mode`, `vehicles` (head vehicle IDs, one per train), `liftHillSpeed`, `minLiftHillSpeed`, `maxLiftHillSpeed`, `departFlags`, `minimumWaitingTime`, and `maximumWaitingTime`. Lift speeds are mph and waiting times are seconds. The six operating readouts are an additive source update: older installed bundles omit them until rebuilt and installed. Missing properties mean unavailable, not zero. API 122 does not expose cars-per-train through this ride view; verify train length/capacity in the game and do not treat `vehicles.length` as seat capacity.
+
+Prefer the maximum normally allowed lift speed, then run a fresh test. Lower it when testing warrants it; do not enable cheats to exceed the limit. Choose load thresholds and waiting times to suit the ride and demand instead of inheriting a 10-second minimum. For example, many small cars may benefit from departures around 3 seconds apart, while a two-train coaster might start with a 20-second minimum. Neither value is a universal default or a guarantee of actual spacing. A carousel can run with any load; a popular coaster may benefit from fuller trains with a bounded maximum wait.
+
+The existing `ridesetsetting` action takes `{ride, setting, value}`. Relevant IDs for the pinned OpenRCT2 version are:
+
+| Setting | ID | Value |
+| --- | --- | --- |
+| Operating mode | 0 | Supported mode enum; continuous circuit = 1, continuous circuit with block sections = 34 |
+| Departure flags | 1 | Bitmask described below |
+| Minimum waiting time | 2 | Seconds, 0–250 |
+| Maximum waiting time | 3 | Seconds, 0–250 |
+| Chain-lift speed | 8 | mph within the ride's normal reported limits |
+
+`ridesetvehicle` takes `{ride, type, value, colour}`: type 0 changes train count; type 1 changes cars per train. The engine applies ride, station, and block limits. Query before executing and verify the resulting configuration.
+
+Departure flags encode the load selection in bits 0–2: quarter = 0, half = 1, three-quarter = 2, full = 3, any = 4. Bit 3 (`8`) enables waiting for that load; bit 4 (`16`) leaves when another vehicle arrives; bit 5 (`32`) synchronises adjacent stations; bit 6 (`64`) enables minimum waiting time; bit 7 (`128`) enables maximum waiting time. Preserve unrelated choices rather than blindly replacing the bitmask. Merely changing a waiting-time number does not enable its checkbox. For example, full-load waiting plus minimum and maximum waits, with the other flags off, is `3 | 8 | 64 | 128 = 203`; it is an example, not a prescribed policy. Setting a minimum above the maximum raises the maximum; setting a maximum below the minimum lowers the minimum. Read both back.
+
+Use request files, `action.query`, and the normal session-bound mutation workflow. Before altering existing track, save a checkpoint, close the ride twice, and verify trains are cleared. Test all trains for multiple circuits after changing blocks, train count/length, mode, or lift speed. Verify restart after block stops, section clearance, guest access, actual departure intervals, and queue waits. A successful single-train circuit or an accepted action is not proof of multi-train operation. Block separation is not a blanket guarantee against every breakdown or crash. Size queues to the resulting capacity and finish names, colours, and landscaping as part of the same design.
+
+Sources for these pinned values: [ride setting IDs](https://github.com/OpenRCT2/OpenRCT2/blob/8694e3483690323b6a75fa7264b6c58116f51f31/src/openrct2/actions/ride/RideSetSettingAction.h), [setting validation and effects](https://github.com/OpenRCT2/OpenRCT2/blob/8694e3483690323b6a75fa7264b6c58116f51f31/src/openrct2/actions/ride/RideSetSettingAction.cpp), [modes and departure flags](https://github.com/OpenRCT2/OpenRCT2/blob/8694e3483690323b6a75fa7264b6c58116f51f31/src/openrct2/ride/Ride.h), [vehicle settings](https://github.com/OpenRCT2/OpenRCT2/blob/8694e3483690323b6a75fa7264b6c58116f51f31/src/openrct2/actions/ride/RideSetVehicleAction.h), and [API 122 ride properties](https://github.com/OpenRCT2/OpenRCT2/blob/8694e3483690323b6a75fa7264b6c58116f51f31/distribution/scripting/openrct2.d.ts).
 
 ## Recovery and limits
 
