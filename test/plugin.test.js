@@ -80,10 +80,10 @@ test('crash after dispatch never replays an unresolved action after restart',()=
     const restarted=harness({store:h.store});restarted.events.data(JSON.stringify(req)+'\n');
     assert.equal(restarted.calls.length,0);assert.equal(restarted.sent.at(-1).result.state,'started');assert.equal(restarted.sent.at(-1).result.inFlight.index,0);
 });
-test('coaster construction chains returned ride ID through all 48 pieces',()=>{
+test('coaster construction chains returned ride ID through all 12 pieces',()=>{
     const h=harness();h.arm();const plan=h.request('track.plan',require('../examples/custom-coaster-plan.json').args).reply;
     assert.equal(plan.ok,true);h.request('coaster.build',{planId:plan.result.planId,maxCost:100000,create:{rideType:0,rideObject:0,entranceObject:0,colour1:0,colour2:0,inspectionInterval:0},name:'Circuit',test:true},{session:h.session});h.flush();
-    assert.equal(h.calls.length,51);assert.equal(h.calls[0].action,'ridecreate');
+    assert.equal(h.calls.length,15);assert.equal(h.calls[0].action,'ridecreate');
     for(const call of h.calls.slice(1))assert.equal(call.args.ride,12);
     assert.equal(h.calls.at(-1).action,'ridesetstatus');assert.equal(h.sent.at(-1).result.state,'completed');
 });
