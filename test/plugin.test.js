@@ -30,6 +30,24 @@ function harness(options={}){
     return {request,flush,arm,session,sent,calls,hooks,store,events,context,saved};
 }
 const price={action:'ridesetprice',args:{ride:0,price:100,isPrimaryPrice:true}};
+test('ride and rides expose operating getters without arming or changing settings',()=>{
+    const operating={departFlags:203,minimumWaitingTime:20,maximumWaitingTime:60,liftHillSpeed:5,minLiftHillSpeed:3,maxLiftHillSpeed:5};
+    const ride={id:9,mode:34,vehicles:[104,109],stations:[]};
+    for(const [key,value] of Object.entries(operating))Object.defineProperty(ride,key,{get:()=>value,set:()=>{throw Error('read-only inspection wrote '+key);}});
+    const h=harness({rides:[ride]});
+    for(const result of [h.request('ride',{ride:9}).reply.result,h.request('rides').reply.result[0]]){
+        for(const [key,value] of Object.entries(operating))assert.equal(result[key],value,key);
+        assert.equal(result.mode,34);assert.deepEqual(result.vehicles,[104,109]);
+    }
+    assert.equal(h.request('hello').reply.result.armed,false);assert.equal(h.calls.length,0);
+});
+test('operating inspection preserves zero values and omits unsupported properties',()=>{
+    const h=harness({rides:[{id:0,departFlags:0,minimumWaitingTime:0,maximumWaitingTime:0,liftHillSpeed:0,minLiftHillSpeed:0,maxLiftHillSpeed:0},{id:1}]});
+    const zero=h.request('ride',{ride:0}).reply.result,missing=h.request('ride',{ride:1}).reply.result;
+    for(const key of ['departFlags','minimumWaitingTime','maximumWaitingTime','liftHillSpeed','minLiftHillSpeed','maxLiftHillSpeed']){
+        assert.equal(zero[key],0);assert.equal(Object.hasOwn(missing,key),false);
+    }
+});
 test('authentication and read-only startup block mutations',()=>{
     const h=harness();assert.equal(h.request('hello',{}, {token:'wrong'}).reply.ok,false);
     assert.match(h.request('action.execute',{...price,maxCost:100},{session:h.session}).reply.error,/read-only/);assert.equal(h.calls.length,0);
