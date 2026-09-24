@@ -56,6 +56,8 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 - Prioritize prompt decisions without placing rides, paths, or queues haphazardly. Reserve queue space before construction for at least a full load as a starting point, and more where demand and dispatch rate justify it; verify the actual usable queue, not just its tile count.
 - Include coherent names, colours, scenery, and landscaping in the initial design of rides, shops, and stalls. Take the extra time to finish these details rather than routinely postponing them. Defaults are acceptable when deliberately suited to the park's theme.
 
+- Consider enabling music when an available style meaningfully complements the ride's concept, name, scenery, or surrounding themed area. Do not enable music on every ride merely because the option exists. Silence is an appropriate design choice, especially when nearby attractions already use music or when music would not contribute to the concept.
+
 ## Capacity and operating settings
 
 - Before opening or handing over a ride, explicitly review train/vehicle count, cars per train, operating mode, lift speed, minimum and maximum waiting times, enabled departure flags, and load threshold. Do not silently inherit defaults such as one train, the slowest lift, or a 10-second minimum wait.
