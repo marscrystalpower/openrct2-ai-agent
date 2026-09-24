@@ -79,6 +79,11 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 - Read back settings after changing them through the existing native actions. Waiting-time values only have their intended effect when the corresponding departure flags are enabled; preserve unrelated flags deliberately. The README documents the pinned engine's setting IDs and bitmask.
 - Recheck throughput, queue waits, occupancy, and forces after changes. Use the final operating settings for the reported test results. Save a unique checkpoint before modifying an existing ride; close twice and verify trains are cleared before editing track or rebuilding its block configuration.
 
+## Path continuity and research checks
+
+- When extending or repairing paths, inspect the adjoining surface and railings and normally match them. Change materials deliberately where the theme, terrain, or function changes, such as a dirt hillside trail leading away from a paved midway. Do not reuse a preferred path surface across parks without checking the local design.
+- During ongoing play, briefly check the latest research notifications or the research panel around each in-game month and before planning a new attraction; unlock timing varies with funding and the scenario. Reassess available design options when research completes. Park notifications are retrieved on inspection, not automatically pushed to the agent. Use the research panel or another verified research-state source when notifications are insufficient; loaded objects alone do not establish that a ride is researched.
+
 ## Private files and sharing
 
 Never publish bridge.config.json, dist/, runtime/, vendor/, user-data/, logs/, sessions/, local saves, screenshots or credentials. Keep the built plugin embeds a secret. Use scripts/Package-Source.ps1 to create an allowlisted source archive, then inspect it. Never upload an entire working installation. Keep LICENSE and upstream attribution. Publication requires the user's instruction; setup does not authorize it.
