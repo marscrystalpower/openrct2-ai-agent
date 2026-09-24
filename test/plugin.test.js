@@ -17,7 +17,7 @@ function harness(options={}){
             if(action==='ridecreate'){const id=nextRide++;rideList.push({id,type:args.rideType,status:'closed'});cb({cost:10,ride:id});}
             else cb({cost:10});
         }};
-    vm.runInNewContext(bundle,{context,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:rideList,getRide:id=>rideList.find(r=>r.id===id),getTrackIterator:options.iterator},park:{cash:10000},scenario:{},date:{},console:{log:()=>{}},registerPlugin:meta=>meta.main()});
+    vm.runInNewContext(bundle,{objectManager:options.objectManager||{getObject:()=>null,getAllObjects:()=>[]},context,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:rideList,getRide:id=>rideList.find(r=>r.id===id),getTrackIterator:options.iterator},park:{cash:10000},scenario:{},date:{},console:{log:()=>{}},registerPlugin:meta=>meta.main()});
     const events={};connection({on:(e,fn)=>{events[e]=fn;},write:line=>sent.push(JSON.parse(line)),end:()=>{}});
     let serial=10000000;
     function request(op,args={},extra={}){
@@ -113,4 +113,35 @@ test('native getter station fields are serialized and unused stations omitted',(
     const station=Object.create(null);Object.defineProperties(station,{length:{get:()=>4},start:{get:()=>({x:10,y:20,z:64})},queueTime:{get:()=>0}});
     const h=harness({rides:[{id:0,stations:[station,{length:0}],incomePerHour:-9223372036854776000}]});
     const r=h.request('ride',{ride:0}).reply.result;assert.equal(r.stations.length,1);assert.equal(r.stations[0].length,4);assert.equal(r.stations[0].start.x,10);assert.equal(r.incomePerHour,null);
+});
+
+test('music inspection resolves zero index and preserves selected style while disabled',()=>{
+    const object={};
+    for(const [key,value] of Object.entries({index:0,identifier:'rct2.music.rock1',name:'Rock style 1'}))Object.defineProperty(object,key,{get:()=>value});
+    const rides=[{id:0},{id:1}];
+    rides.forEach((ride,i)=>{Object.defineProperties(ride,{music:{get:()=>0,set:()=>{throw Error('music write');}},flags:{get:()=>i===0?8192|2:2,set:()=>{throw Error('flags write');}}});});
+    const h=harness({rides,objectManager:{getObject:(type,index)=>{assert.equal(type,'music');assert.equal(index,0);return object;}}});
+    const all=h.request('rides').reply.result;
+    for(let id=0;id<2;id++)for(const r of [all[id],h.request('ride',{ride:id}).reply.result]){
+        assert.equal(r.musicEnabled,id===0);assert.equal(r.musicObjectIndex,0);
+        assert.equal(r.musicIdentifier,'rct2.music.rock1');assert.equal(r.musicName,'Rock style 1');
+    }
+    assert.equal(h.calls.length,0);assert.equal(h.request('hello').reply.result.armed,false);
+});
+test('music inspection tolerates absent and unresolvable objects and missing state',()=>{
+    for(const getObject of [()=>null,()=>undefined,()=>{throw Error('missing object');}]){
+        const h=harness({rides:[{id:0,music:7,flags:8192},{id:1}],objectManager:{getObject}});
+        const r=h.request('ride',{ride:0}).reply.result;
+        assert.equal(r.musicEnabled,true);assert.equal(r.musicObjectIndex,7);
+        assert.equal(r.musicIdentifier,null);assert.equal(r.musicName,null);
+        const missing=h.request('ride',{ride:1}).reply.result;
+        for(const key of ['musicEnabled','musicObjectIndex','musicIdentifier','musicName'])assert.equal(missing[key],null);
+        assert.equal(h.calls.length,0);
+    }
+});
+test('objects readout lists loaded music with zero-valued indices',()=>{
+    const h=harness({objectManager:{getAllObjects:type=>{assert.equal(type,'music');return [{index:0,identifier:'rct2.music.rock1',name:'Rock style 1'}];}}});
+    const r=h.request('objects',{type:'music'}).reply;
+    assert.equal(r.ok,true);assert.deepEqual(r.result,[{index:0,identifier:'rct2.music.rock1',name:'Rock style 1'}]);
+    assert.equal(h.calls.length,0);assert.equal(h.request('hello').reply.result.armed,false);
 });
