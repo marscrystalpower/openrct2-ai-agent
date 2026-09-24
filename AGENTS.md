@@ -43,6 +43,8 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 - Do not use one fixed colour scheme for every coaster. Variety is desirable, but colours should remain coherent with the individual ride and its surroundings.
 - If the available ride object or API does not support the desired appearance or colour options, use the supported options rather than attempting unsupported values.
 
+- Consider racing or dueling coasters with synchronized adjacent stations, or a single continuous Möbius-style circuit connecting two adjacent stations, when the concept, terrain, space, budget, and expected demand justify them. These are optional design approaches, not requirements for every park. Give each side a coherent identity and plan meaningful encounters through parallel runs, crossings, or contrasting elements. Where normal clearance rules permit, consider threading track through the centre of another loop as an intentional interaction. Match travel times at key encounters rather than merely matching total ride duration. Verify station synchronization, circuit connectivity, loading access, legal clearance, and reliable operation over several dispatches; synchronization does not replace block protection.
+
 ## Ride design philosophy
 
 - A ride that is technically complete is not automatically a successful design; you should prefer layouts with several distinct and intentional moments.
