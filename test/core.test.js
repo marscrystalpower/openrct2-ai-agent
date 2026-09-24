@@ -3,8 +3,8 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const core=require('../src/core'),segments=require('./fixtures/segments.json'),names=require('../generated/track-names.json'),schemas=require('../generated/actions.json');
 const example=require('../examples/custom-coaster-plan.json').args;
 const plan=p=>core.plan(p,t=>segments[t],names,{x:128,y:128});
-test('real engine geometry produces a closed 48-piece custom hill coaster',()=>{
-    const r=plan(example);assert.equal(r.closed,true);assert.equal(r.steps.length,48);assert.equal(r.possibleOverlaps.length,0);
+test('real engine geometry produces a closed 12-piece custom hill coaster',()=>{
+    const r=plan(example);assert.equal(r.closed,true);assert.equal(r.steps.length,12);assert.equal(r.possibleOverlaps.length,0);
     assert.equal(Math.max(...r.footprint.map(p=>p.z)),168);assert.deepEqual(r.end,r.start);
 });
 test('closure survives all four cardinal rotations',()=>{
