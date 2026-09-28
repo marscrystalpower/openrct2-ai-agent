@@ -20,6 +20,8 @@ for(const action of allow){
     for(const p of body.matchAll(/^\s*(\w+): ([\w\[\]]+);/gm)) schemas[action][p[1]]=p[2];
 }
 const generated=path.join(root,'generated');fs.mkdirSync(generated,{recursive:true});
+const entranceSides=require('./entrance-sides')(read,names);
+fs.writeFileSync(path.join(generated,'entrance-sides.json'),JSON.stringify(entranceSides,null,2)+'\n');
 fs.writeFileSync(path.join(generated,'track-names.json'),JSON.stringify(names,null,2)+'\n');
 fs.writeFileSync(path.join(generated,'actions.json'),JSON.stringify(schemas,null,2)+'\n');
 const configPath=path.join(root,'bridge.config.json');
@@ -28,7 +30,7 @@ const config=JSON.parse(fs.readFileSync(configPath));
 if(config.host!=='127.0.0.1'|| !/^[a-f0-9]{64}$/.test(config.token) || !Number.isInteger(config.port) || config.port<1024 || config.port>65535) throw Error('Invalid bridge configuration');
 const header='// Generated for OpenRCT2 v0.5.5 / API 122. Contains a local authentication token; do not share.\n';
 const bundle=header+'var BRIDGE_CONFIG='+JSON.stringify(config)+';\nvar TRACK_NAMES='+JSON.stringify(names)+';\nvar ACTION_SCHEMAS='+JSON.stringify(schemas)+';\n'+
-    fs.readFileSync(path.join(root,'src/core.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/plugin.js'),'utf8');
+    'var ENTRANCE_SIDES='+JSON.stringify(entranceSides)+';\n'+fs.readFileSync(path.join(root,'src/core.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/plugin.js'),'utf8');
 fs.mkdirSync(path.join(root,'dist'),{recursive:true});
 fs.writeFileSync(path.join(root,'dist/agent-bridge.js'),bundle);
 fs.writeFileSync(path.join(root,'dist/build-info.json'),JSON.stringify({version:'0.1.0',openrct2:'0.5.5',api:122,sourceCommit:'8694e3483690323b6a75fa7264b6c58116f51f31',sha256:crypto.createHash('sha256').update(bundle).digest('hex'),actions:allow.length,trackNames:Object.keys(names).length},null,2)+'\n');
