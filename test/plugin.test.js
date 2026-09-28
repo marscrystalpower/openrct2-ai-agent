@@ -17,7 +17,7 @@ function harness(options={}){
             if(action==='ridecreate'){const id=nextRide++;rideList.push({id,type:args.rideType,status:'closed'});cb({cost:10,ride:id});}
             else cb({cost:10});
         }};
-    vm.runInNewContext(bundle,{objectManager:options.objectManager||{getObject:()=>null,getAllObjects:()=>[]},context,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:rideList,getRide:id=>rideList.find(r=>r.id===id),getTrackIterator:options.iterator},park:{cash:10000},scenario:{},date:{},console:{log:()=>{}},registerPlugin:meta=>meta.main()});
+    vm.runInNewContext(bundle,{objectManager:options.objectManager||{getObject:()=>null,getAllObjects:()=>[]},context,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:rideList,getRide:id=>rideList.find(r=>r.id===id),getTile:options.getTile||(()=>({elements:[]})),getTrackIterator:options.iterator},park:{cash:10000},scenario:{},date:{},console:{log:()=>{}},registerPlugin:meta=>meta.main()});
     const events={};connection({on:(e,fn)=>{events[e]=fn;},write:line=>sent.push(JSON.parse(line)),end:()=>{}});
     let serial=10000000;
     function request(op,args={},extra={}){
@@ -144,4 +144,42 @@ test('objects readout lists loaded music with zero-valued indices',()=>{
     const r=h.request('objects',{type:'music'}).reply;
     assert.equal(r.ok,true);assert.deepEqual(r.result,[{index:0,identifier:'rct2.music.rock1',name:'Rock style 1'}]);
     assert.equal(h.calls.length,0);assert.equal(h.request('hello').reply.result.armed,false);
+});
+
+
+const gate={action:'rideentranceexitplace',args:{x:192,y:832,direction:2,ride:1,station:0,isExit:false}};
+function gateHarness(element,extra={}){
+    return harness({rides:[{id:1,type:26,stations:[]}],getTile:(x,y)=>({elements:x===7&&y===26?[element]:[]}),...extra});
+}
+const shipSide={type:'track',ride:1,trackType:261,sequence:3,direction:1,baseZ:80,station:null};
+test('entrances and exits accept permitted ship sides in all rotations',()=>{
+    for(let direction=0;direction<4;direction++)for(const isExit of [false,true]){
+        const h=gateHarness({...shipSide,direction},{getTile:()=>({elements:[{...shipSide,direction}]})});
+        const args={...gate.args,direction:(direction+1)&3,isExit};
+        assert.equal(h.request('action.query',{action:gate.action,args}).reply.ok,true);
+        h.arm();h.request('action.execute',{action:gate.action,args,maxCost:100},{session:h.session});h.flush();
+        assert.equal(h.calls.length,1);assert.equal(h.sent.at(-1).result.state,'completed');
+    }
+});
+test('native-accepted ship end tiles, wrong ride, station, direction and unknown metadata are blocked',()=>{
+    for(const e of [{...shipSide,sequence:1},{...shipSide,sequence:4},{...shipSide,ride:2},{...shipSide,trackType:0},{...shipSide,isGhost:true}]){
+        const h=gateHarness(e);assert.equal(h.request('action.query',gate).reply.ok,false);
+        h.arm();h.request('batch.execute',{actions:[gate],maxCost:100},{session:h.session});h.flush();
+        assert.equal(h.calls.length,0);assert.equal(h.sent.at(-1).result.state,'partial');
+    }
+    for(const args of [{...gate.args,station:1},{...gate.args,direction:1},{...gate.args,x:193}]){
+        const h=gateHarness(shipSide);assert.equal(h.request('action.query',{action:gate.action,args}).reply.ok,false);
+    }
+});
+test('coaster gates require the selected station at its height',()=>{
+    for(const [station,z,expected] of [[0,80,true],[1,80,false],[0,96,false]]){
+        const h=gateHarness(null,{rides:[{id:1,stations:[{start:{x:224,y:832,z:80}}]}],getTile:()=>({elements:[{...shipSide,trackType:1,direction:1,sequence:0,station,baseZ:z}]})});
+        assert.equal(h.request('action.query',gate).reply.ok,expected);
+    }
+});
+test('gate side is rechecked immediately before execution',()=>{
+    let element={...shipSide};
+    const h=gateHarness(null,{getTile:()=>({elements:[element]}),onQuery:()=>{element={...shipSide,sequence:4};}});
+    h.arm();h.request('action.execute',{...gate,maxCost:100},{session:h.session});h.flush();
+    assert.equal(h.calls.length,0);assert.equal(h.sent.at(-1).result.state,'partial');
 });
