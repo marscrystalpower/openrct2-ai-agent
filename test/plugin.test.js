@@ -17,7 +17,7 @@ function harness(options={}){
             if(action==='ridecreate'){const id=nextRide++;rideList.push({id,type:args.rideType,status:'closed'});cb({cost:10,ride:id});}
             else cb({cost:10});
         }};
-    vm.runInNewContext(bundle,{context,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:rideList,getRide:id=>rideList.find(r=>r.id===id),getTrackIterator:options.iterator},park:{cash:10000},scenario:{},date:{},console:{log:()=>{}},registerPlugin:meta=>meta.main()});
+    vm.runInNewContext(bundle,{objectManager:options.objectManager||{getObject:()=>null,getAllObjects:()=>[]},context,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:rideList,getRide:id=>rideList.find(r=>r.id===id),getTile:options.getTile||(()=>({elements:[]})),getTrackIterator:options.iterator},park:{cash:10000},scenario:{},date:{},console:{log:()=>{}},registerPlugin:meta=>meta.main()});
     const events={};connection({on:(e,fn)=>{events[e]=fn;},write:line=>sent.push(JSON.parse(line)),end:()=>{}});
     let serial=10000000;
     function request(op,args={},extra={}){
@@ -30,6 +30,24 @@ function harness(options={}){
     return {request,flush,arm,session,sent,calls,hooks,store,events,context,saved};
 }
 const price={action:'ridesetprice',args:{ride:0,price:100,isPrimaryPrice:true}};
+test('ride and rides expose operating getters without arming or changing settings',()=>{
+    const operating={departFlags:203,minimumWaitingTime:20,maximumWaitingTime:60,liftHillSpeed:5,minLiftHillSpeed:3,maxLiftHillSpeed:5};
+    const ride={id:9,mode:34,vehicles:[104,109],stations:[]};
+    for(const [key,value] of Object.entries(operating))Object.defineProperty(ride,key,{get:()=>value,set:()=>{throw Error('read-only inspection wrote '+key);}});
+    const h=harness({rides:[ride]});
+    for(const result of [h.request('ride',{ride:9}).reply.result,h.request('rides').reply.result[0]]){
+        for(const [key,value] of Object.entries(operating))assert.equal(result[key],value,key);
+        assert.equal(result.mode,34);assert.deepEqual(result.vehicles,[104,109]);
+    }
+    assert.equal(h.request('hello').reply.result.armed,false);assert.equal(h.calls.length,0);
+});
+test('operating inspection preserves zero values and omits unsupported properties',()=>{
+    const h=harness({rides:[{id:0,departFlags:0,minimumWaitingTime:0,maximumWaitingTime:0,liftHillSpeed:0,minLiftHillSpeed:0,maxLiftHillSpeed:0},{id:1}]});
+    const zero=h.request('ride',{ride:0}).reply.result,missing=h.request('ride',{ride:1}).reply.result;
+    for(const key of ['departFlags','minimumWaitingTime','maximumWaitingTime','liftHillSpeed','minLiftHillSpeed','maxLiftHillSpeed']){
+        assert.equal(zero[key],0);assert.equal(Object.hasOwn(missing,key),false);
+    }
+});
 test('authentication and read-only startup block mutations',()=>{
     const h=harness();assert.equal(h.request('hello',{}, {token:'wrong'}).reply.ok,false);
     assert.match(h.request('action.execute',{...price,maxCost:100},{session:h.session}).reply.error,/read-only/);assert.equal(h.calls.length,0);
@@ -62,10 +80,10 @@ test('crash after dispatch never replays an unresolved action after restart',()=
     const restarted=harness({store:h.store});restarted.events.data(JSON.stringify(req)+'\n');
     assert.equal(restarted.calls.length,0);assert.equal(restarted.sent.at(-1).result.state,'started');assert.equal(restarted.sent.at(-1).result.inFlight.index,0);
 });
-test('coaster construction chains returned ride ID through all 48 pieces',()=>{
+test('coaster construction chains returned ride ID through all 12 pieces',()=>{
     const h=harness();h.arm();const plan=h.request('track.plan',require('../examples/custom-coaster-plan.json').args).reply;
     assert.equal(plan.ok,true);h.request('coaster.build',{planId:plan.result.planId,maxCost:100000,create:{rideType:0,rideObject:0,entranceObject:0,colour1:0,colour2:0,inspectionInterval:0},name:'Circuit',test:true},{session:h.session});h.flush();
-    assert.equal(h.calls.length,51);assert.equal(h.calls[0].action,'ridecreate');
+    assert.equal(h.calls.length,15);assert.equal(h.calls[0].action,'ridecreate');
     for(const call of h.calls.slice(1))assert.equal(call.args.ride,12);
     assert.equal(h.calls.at(-1).action,'ridesetstatus');assert.equal(h.sent.at(-1).result.state,'completed');
 });
@@ -95,4 +113,73 @@ test('native getter station fields are serialized and unused stations omitted',(
     const station=Object.create(null);Object.defineProperties(station,{length:{get:()=>4},start:{get:()=>({x:10,y:20,z:64})},queueTime:{get:()=>0}});
     const h=harness({rides:[{id:0,stations:[station,{length:0}],incomePerHour:-9223372036854776000}]});
     const r=h.request('ride',{ride:0}).reply.result;assert.equal(r.stations.length,1);assert.equal(r.stations[0].length,4);assert.equal(r.stations[0].start.x,10);assert.equal(r.incomePerHour,null);
+});
+
+test('music inspection resolves zero index and preserves selected style while disabled',()=>{
+    const object={};
+    for(const [key,value] of Object.entries({index:0,identifier:'rct2.music.rock1',name:'Rock style 1'}))Object.defineProperty(object,key,{get:()=>value});
+    const rides=[{id:0},{id:1}];
+    rides.forEach((ride,i)=>{Object.defineProperties(ride,{music:{get:()=>0,set:()=>{throw Error('music write');}},flags:{get:()=>i===0?8192|2:2,set:()=>{throw Error('flags write');}}});});
+    const h=harness({rides,objectManager:{getObject:(type,index)=>{assert.equal(type,'music');assert.equal(index,0);return object;}}});
+    const all=h.request('rides').reply.result;
+    for(let id=0;id<2;id++)for(const r of [all[id],h.request('ride',{ride:id}).reply.result]){
+        assert.equal(r.musicEnabled,id===0);assert.equal(r.musicObjectIndex,0);
+        assert.equal(r.musicIdentifier,'rct2.music.rock1');assert.equal(r.musicName,'Rock style 1');
+    }
+    assert.equal(h.calls.length,0);assert.equal(h.request('hello').reply.result.armed,false);
+});
+test('music inspection tolerates absent and unresolvable objects and missing state',()=>{
+    for(const getObject of [()=>null,()=>undefined,()=>{throw Error('missing object');}]){
+        const h=harness({rides:[{id:0,music:7,flags:8192},{id:1}],objectManager:{getObject}});
+        const r=h.request('ride',{ride:0}).reply.result;
+        assert.equal(r.musicEnabled,true);assert.equal(r.musicObjectIndex,7);
+        assert.equal(r.musicIdentifier,null);assert.equal(r.musicName,null);
+        const missing=h.request('ride',{ride:1}).reply.result;
+        for(const key of ['musicEnabled','musicObjectIndex','musicIdentifier','musicName'])assert.equal(missing[key],null);
+        assert.equal(h.calls.length,0);
+    }
+});
+test('objects readout lists loaded music with zero-valued indices',()=>{
+    const h=harness({objectManager:{getAllObjects:type=>{assert.equal(type,'music');return [{index:0,identifier:'rct2.music.rock1',name:'Rock style 1'}];}}});
+    const r=h.request('objects',{type:'music'}).reply;
+    assert.equal(r.ok,true);assert.deepEqual(r.result,[{index:0,identifier:'rct2.music.rock1',name:'Rock style 1'}]);
+    assert.equal(h.calls.length,0);assert.equal(h.request('hello').reply.result.armed,false);
+});
+
+
+const gate={action:'rideentranceexitplace',args:{x:192,y:832,direction:2,ride:1,station:0,isExit:false}};
+function gateHarness(element,extra={}){
+    return harness({rides:[{id:1,type:26,stations:[]}],getTile:(x,y)=>({elements:x===7&&y===26?[element]:[]}),...extra});
+}
+const shipSide={type:'track',ride:1,trackType:261,sequence:3,direction:1,baseZ:80,station:null};
+test('entrances and exits accept permitted ship sides in all rotations',()=>{
+    for(let direction=0;direction<4;direction++)for(const isExit of [false,true]){
+        const h=gateHarness({...shipSide,direction},{getTile:()=>({elements:[{...shipSide,direction}]})});
+        const args={...gate.args,direction:(direction+1)&3,isExit};
+        assert.equal(h.request('action.query',{action:gate.action,args}).reply.ok,true);
+        h.arm();h.request('action.execute',{action:gate.action,args,maxCost:100},{session:h.session});h.flush();
+        assert.equal(h.calls.length,1);assert.equal(h.sent.at(-1).result.state,'completed');
+    }
+});
+test('native-accepted ship end tiles, wrong ride, station, direction and unknown metadata are blocked',()=>{
+    for(const e of [{...shipSide,sequence:1},{...shipSide,sequence:4},{...shipSide,ride:2},{...shipSide,trackType:0},{...shipSide,isGhost:true}]){
+        const h=gateHarness(e);assert.equal(h.request('action.query',gate).reply.ok,false);
+        h.arm();h.request('batch.execute',{actions:[gate],maxCost:100},{session:h.session});h.flush();
+        assert.equal(h.calls.length,0);assert.equal(h.sent.at(-1).result.state,'partial');
+    }
+    for(const args of [{...gate.args,station:1},{...gate.args,direction:1},{...gate.args,x:193}]){
+        const h=gateHarness(shipSide);assert.equal(h.request('action.query',{action:gate.action,args}).reply.ok,false);
+    }
+});
+test('coaster gates require the selected station at its height',()=>{
+    for(const [station,z,expected] of [[0,80,true],[1,80,false],[0,96,false]]){
+        const h=gateHarness(null,{rides:[{id:1,stations:[{start:{x:224,y:832,z:80}}]}],getTile:()=>({elements:[{...shipSide,trackType:1,direction:1,sequence:0,station,baseZ:z}]})});
+        assert.equal(h.request('action.query',gate).reply.ok,expected);
+    }
+});
+test('gate side is rechecked immediately before execution',()=>{
+    let element={...shipSide};
+    const h=gateHarness(null,{getTile:()=>({elements:[element]}),onQuery:()=>{element={...shipSide,sequence:4};}});
+    h.arm();h.request('action.execute',{...gate,maxCost:100},{session:h.session});h.flush();
+    assert.equal(h.calls.length,0);assert.equal(h.sent.at(-1).result.state,'partial');
 });
