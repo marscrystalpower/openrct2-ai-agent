@@ -94,7 +94,30 @@
             default:error('Unknown operation '+req.op);
             }
         }
-        function query(action,args,cb){C.validateAction(action,args,ACTION_SCHEMAS);context.queryAction(action,args,cb);}
+        function validateEntrance(a){
+            // v0.5.5 UI RideGetEntranceOrExitPositionFromScreenPosition checks these
+            // sides; RideEntranceExitPlaceAction::Query does not. Never bypass it.
+            C.integer(a.direction,'direction',0,3);C.integer(a.station,'station',0,3);
+            if(a.x%32 || a.y%32)error('Entrance coordinates must be tile aligned');
+            var r=getRide(a.ride), delta=[[-1,0],[0,1],[1,0],[0,-1]][a.direction];
+            var x=a.x/32+delta[0],y=a.y/32+delta[1];
+            if(x<0||y<0||x>=map.size.x||y>=map.size.y)error('Entrance has no adjacent station');
+            var valid=map.getTile(x,y).elements.some(function(e){
+                if(e.type!=='track'||e.ride!==a.ride||e.isGhost)return false;
+                var station=r.stations&&r.stations[a.station];
+                var flat=e.trackType>=257&&e.trackType<=266 || e.trackType===TRACK_NAMES.towerBase;
+                var maze=e.trackType===TRACK_NAMES.maze;
+                if(flat||maze){if(a.station!==0)return false;}
+                else if(e.station!==a.station || !station || !station.start || e.baseZ!==station.start.z)return false;
+                if(maze)return true;
+                var sides=ENTRANCE_SIDES[e.trackType];
+                if(!sides||!Number.isInteger(e.sequence)||!Number.isInteger(e.direction))return false;
+                var side=((a.direction^2)-e.direction)&3;
+                return (sides[e.sequence] & (1<<side))!==0;
+            });
+            if(!valid)error('Entrance/exit must face a permitted side of the selected ride station under normal construction rules');
+        }
+        function query(action,args,cb){C.validateAction(action,args,ACTION_SCHEMAS);if(action==='rideentranceexitplace')validateEntrance(args);context.queryAction(action,args,cb);}
         function mutation(req,send){
             var fingerprint=JSON.stringify({op:req.op,args:req.args,session:req.session});
             if(Object.prototype.hasOwnProperty.call(receipts,req.id)){
@@ -149,6 +172,7 @@
                             if(q.error){finish('partial',{index:index,phase:'query',result:q});return;}
                             if(!valid()){finish('stopped','STOP or park change during query');return;}
                             if(receipt.spent+Math.max(0,q.cost||0)>budget){finish('partial',{index:index,phase:'budget',cost:q.cost,remaining:budget-receipt.spent});return;}
+                            if(item.action==='rideentranceexitplace')validateEntrance(item.args);
                             receipt.inFlight={index:index,action:item.action,args:item.args};persist();
                             context.executeAction(item.action,item.args,function(r){
                                 try{
