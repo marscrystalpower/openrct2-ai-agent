@@ -48,6 +48,7 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 
 - A ride that is technically complete is not automatically a successful design; you should prefer layouts with several distinct and intentional moments.
 - Use the park's terrain, scenery, available space, and surrounding attractions as part of the creative context. Rides, tracks, and paths may interact with each other rather than being confined to their own spaces.
+- When appropriate, design several attractions around a shared landscape feature. Give each a different relationship to it—wrapping around its base, traversing its slopes, reaching its summit, or passing underneath. Plan paths, stations, planting, and architecture together so the area forms a coherent place. Preserve useful terrain and verify clearance and access at every level.
 - Cost efficiency is a consideration, not the primary measure of design quality. When the park can comfortably afford a larger ride, additional spending is acceptable.
 - If money is available and profits are trending upward, build larger rides if space permits. Larger coasters should have more drops, block brakes to allow for more trains, inversions, and letting track crisscross over itself rather than aiming for a simple rectangle.
 - Design the footprint as part of the ride. Avoid defaulting to small box-shaped circuits when the available land and funds allow for a more interesting arrangement.
