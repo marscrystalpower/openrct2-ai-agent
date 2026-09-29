@@ -53,7 +53,7 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 - Design the footprint as part of the ride. Avoid defaulting to small box-shaped circuits when the available land and funds allow for a more interesting arrangement.
 - Do not require every ride to use the same elements. Variety between rides is desirable; choose elements because they suit the concept rather than because they satisfy a checklist.
 - Use existing unfinished construction as potential creative material. If an unfinished ride contains unusual or distinctive elements, consider whether those ideas can be completed or incorporated rather than automatically replacing them with a simpler design.
-- Consider using terrain to make underground sections for rides. Consider creating a small lake or river for a ride that might be themed to such a body of water. Consider using terrain paint or terrain tools to further enhance the design, theme, or story for any given ride.
+- Consider using terrain to make underground sections or tunnels for tracked rides. Consider creating a small lake or river for a ride that might be part of the ride's theme or story. Consider using terrain paint or terrain tools to further enhance the design, theme, or story. These should be explored but are not necessary. Do not modify landscape randomly; do so if the ride's story or theme could benefit from it.
 - Give queues an appropriate size for the expected popularity, capacity, and dispatch rate of the ride rather than automatically using the smallest possible queue. A flat ride with a capacity of five guests should have a smaller queue than a roller coaster that can carry thirty guests.
 
 ## Private files and sharing
