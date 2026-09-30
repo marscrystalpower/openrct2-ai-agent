@@ -14,3 +14,11 @@ The build used existing upstream source through a local clone, not a fresh netwo
 Publication review: setup now expands test filenames explicitly in PowerShell for compatibility with Node 20. This small setup-script change was reviewed without rerunning tests. Fresh-machine acceptance was deferred at the publisher's request; it is not a publication prerequisite for this community test release.
 
 Repository: https://github.com/FTPAiYT/openrct2-agent-bridge
+
+## Maze source update, 2026-09-29 (0.1.1)
+
+- Build inputs were compared with the Git blob IDs at pinned engine commit 8694e3483690323b6a75fa7264b6c58116f51f31. The cached copies matched after removing extra trailing blank lines; no engine source was changed.
+- The build produced 41 action schemas and 353 track identifiers. All 43 automated tests passed, including 12 maze tests; plugin and maze tests mock the engine. Client tests use real local TCP.
+- Existing geometry/build assertions now match the current 12-piece banked syntax example. Historical 48-piece native evidence remains separate.
+- The explicit 29-file source archive was inspected for private paths and credentials. The old token-bearing root bundle is removed from the current source tree and ignored; new bundles and tokens are built locally. This does not rewrite earlier Git history.
+- Native maze construction, gate changes, guest access and guest completion have not yet been verified. This update does not qualify fresh-machine setup or claim turnkey installation.

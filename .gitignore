@@ -1,0 +1,14 @@
+# Private installation and game state; publish source only.
+bridge.config.json
+dist/
+runtime/
+vendor/
+user-data/
+logs/
+sessions/
+release-output/
+node_modules/
+agent-bridge.js
+*.park
+*.sv6
+*.sv4

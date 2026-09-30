@@ -21,7 +21,7 @@ No game assets, saved parks, screenshots, authentication tokens, session records
 ## Included
 
 - Park finances, scenario, guests and thoughts, staff, rides and operating statistics, bounded map inspection, and loaded object catalogs.
-- 39 schema-validated game actions covering rides, tracks, entrances/exits, paths, staff, prices, research, marketing, land, water, scenery, pause, and speed.
+- 41 schema-validated game actions covering rides, tracks, entrances/exits, paths, staff, prices, research, marketing, land, water, scenery, pause, and speed.
 - Full runtime track catalog with 353 named track identifiers from the pinned engine. Ride-specific availability still depends on the engine and selected vehicle.
 - Custom blueprints with repetition, curves, banking, slopes, chain lifts, brakes, inversions, diagonal transitions, per-piece colours and seat rotation. Some special track systems have additional engine constraints.
 - New-coaster construction or appending to an existing closed ride; optional entrance/exit placement and testing; existing-track traversal with gap/circuit detection.
@@ -78,6 +78,16 @@ Use `action.execute` with the same action/args plus `maxCost` to execute; `batch
 8. Query and execute `ridesetstatus` with status 2 (testing). Let a train complete its circuit; inspect `ride` for speed, forces, excitement, intensity, nausea and reliability. Successful placement or setting the testing flag does not prove the train completes the circuit. Status 1 opens the ride only when ready.
 
 Track-piece names come from generated/track-names.json. `track.catalog` supplies live geometry. The sample coordinates are illustrative and must be changed for the actual park. A physically slow or unsafe layout needs redesign even when it closes geometrically.
+
+## Build a maze
+
+Maze construction uses the native `mazeplacetrack` and `mazesettrack` actions, rather than generic `trackplace` with the maze track identifier. Create a researched Maze ride (ride type 20), keep it closed during construction, and inspect the exact schemas before querying and executing actions.
+
+- `mazeplacetrack` places a full tile at world x/y multiples of 32. Its `mazeEntry` is the engine's 16-bit cell-and-wall mask (0..65535).
+- `mazesettrack` edits a half-tile cell at world x/y multiples of 16. `direction` is 0..3, `mode` is 0 (build), 1 (move), or 2 (fill), and `isInitialPlacement` is a required boolean.
+- Both actions require world z aligned to 16 and a valid, closed Maze ride. The engine's query still decides normal ownership, clearance, terrain and construction legality.
+
+Bounded `map` inspection includes the native `mazeEntry` mask for Maze track elements. Inspect these masks again after placing entrances and exits, because gates change the adjoining maze walls. Verify connected cells, a usable entrance-to-exit route, normal gate/path legality, and a native screenshot before opening. Mazes do not use coaster train testing; observe guests entering and leaving to verify operation.
 
 ## Coaster design is not prescribed
 

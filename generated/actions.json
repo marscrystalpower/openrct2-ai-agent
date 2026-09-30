@@ -56,6 +56,22 @@
     "station": "number",
     "isExit": "boolean"
   },
+  "mazeplacetrack": {
+    "x": "number",
+    "y": "number",
+    "z": "number",
+    "ride": "number",
+    "mazeEntry": "number"
+  },
+  "mazesettrack": {
+    "x": "number",
+    "y": "number",
+    "z": "number",
+    "direction": "number",
+    "ride": "number",
+    "mode": "number",
+    "isInitialPlacement": "boolean"
+  },
   "trackplace": {
     "x": "number",
     "y": "number",

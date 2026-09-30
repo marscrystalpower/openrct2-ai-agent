@@ -35,11 +35,23 @@
             }
             return {closed:false,reason:'traversal limit',segments:out};
         }
-        function tileView(x,y){var t=map.getTile(x,y);return {x:x,y:y,elements:t.elements.map(function(el,index){return Object.assign({elementIndex:index},pick(el,['type','baseZ','clearanceZ','slope','waterHeight','ownership','surfaceStyle','edgeStyle','direction','ride','station','trackType','sequence','hasChainLift','isInverted','edges','isQueue','isWide','queueBannerDirection','object','quadrant']));})};}
+        function tileView(x,y){
+            var t=map.getTile(x,y);
+            return {x:x,y:y,elements:t.elements.map(function(el,index){
+                var result=Object.assign({elementIndex:index},pick(el,['type','baseZ','clearanceZ','slope','waterHeight','ownership','surfaceStyle','edgeStyle','direction','ride','station','trackType','sequence','hasChainLift','isInverted','edges','isQueue','isWide','queueBannerDirection','object','quadrant']));
+                if(el.type==='track'){
+                    var ride=map.getRide(el.ride);
+                    if(ride && ride.type===20){
+                        try{var mazeEntry=el.mazeEntry;if(mazeEntry!==undefined)result.mazeEntry=mazeEntry;}catch(e){result.mazeEntry=null;}
+                    }
+                }
+                return result;
+            })};
+        }
         function inspect(req){
             var a=req.args||{};
             switch(req.op){
-            case 'hello':return {bridgeVersion:'0.1.0',apiVersion:context.apiVersion,session:session,armed:armed,busy:busy,mode:context.mode,network:network.mode,operations:['hello','arm','stop','receipt','park','rides','ride','map','guests','staff','objects','actions','capture','save','track.catalog','track.plan','track.walk','action.query','action.execute','batch.execute','track.build','coaster.build']};
+            case 'hello':return {bridgeVersion:'0.1.1',apiVersion:context.apiVersion,session:session,armed:armed,busy:busy,mode:context.mode,network:network.mode,operations:['hello','arm','stop','receipt','park','rides','ride','map','guests','staff','objects','actions','capture','save','track.catalog','track.plan','track.walk','action.query','action.execute','batch.execute','track.build','coaster.build']};
             case 'actions':return ACTION_SCHEMAS;
             case 'receipt':if(typeof a.id!=='string')error('receipt id required');return Object.prototype.hasOwnProperty.call(receipts,a.id)?receipts[a.id]:null;
             case 'arm':playable();if(req.session!==session)error('Stale session');armed=true;return {armed:true,session:session};
@@ -79,7 +91,22 @@
             default:error('Unknown operation '+req.op);
             }
         }
-        function query(action,args,cb){C.validateAction(action,args,ACTION_SCHEMAS);context.queryAction(action,args,cb);}
+        function query(action,args,cb){
+            C.validateAction(action,args,ACTION_SCHEMAS);
+            if(action==='mazeplacetrack'||action==='mazesettrack'){
+                var mazeRide=getRide(args.ride);
+                if(mazeRide.type!==20)error('Maze action requires a Maze ride');
+                if(mazeRide.status!=='closed')error('Close the maze before construction');
+                var grid=action==='mazeplacetrack'?32:16;
+                C.integer(args.x,'maze x',0,map.size.x*32-grid);
+                C.integer(args.y,'maze y',0,map.size.y*32-grid);
+                C.integer(args.z,'maze z',0,2040);
+                if(args.x%grid||args.y%grid||args.z%16)error('Maze coordinates must align to the native grid');
+                if(action==='mazeplacetrack')C.integer(args.mazeEntry,'mazeEntry',0,65535);
+                else {C.integer(args.direction,'maze direction',0,3);C.integer(args.mode,'maze mode',0,2);}
+            }
+            context.queryAction(action,args,cb);
+        }
         function mutation(req,send){
             var fingerprint=JSON.stringify({op:req.op,args:req.args,session:req.session});
             if(Object.prototype.hasOwnProperty.call(receipts,req.id)){
@@ -177,7 +204,7 @@
         });
         listener.listen(BRIDGE_CONFIG.port,'127.0.0.1');
         if(typeof ui!=='undefined')ui.registerMenuItem('Agent bridge: STOP',function(){armed=false;generation++;console.log('Agent bridge stopped');});
-        console.log('Agent bridge 0.1.0 listening on localhost:'+BRIDGE_CONFIG.port+' (read-only)');
+        console.log('Agent bridge 0.1.1 listening on localhost:'+BRIDGE_CONFIG.port+' (read-only)');
     }
-    registerPlugin({name:'Agent Bridge',version:'0.1.0',authors:['Local agent bridge'],type:'intransient',licence:'GPL-3.0-only',minApiVersion:122,targetApiVersion:122,main:main});
+    registerPlugin({name:'Agent Bridge',version:'0.1.1',authors:['Local agent bridge'],type:'intransient',licence:'GPL-3.0-only',minApiVersion:122,targetApiVersion:122,main:main});
 })();

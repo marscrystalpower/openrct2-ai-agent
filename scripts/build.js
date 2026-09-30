@@ -7,7 +7,7 @@ const types=read('distribution/scripting/openrct2.d.ts');
 const names={};
 for(const m of read('src/openrct2/ride/ted/TrackElemType.h').matchAll(/^\s*(\w+)\s*=\s*(\d+),/gm)) names[m[1]]=Number(m[2]);
 const allow=['ridecreate','ridedemolish','ridesetname','ridesetprice','ridesetsetting','ridesetstatus','ridesetvehicle','ridesetappearance','rideentranceexitplace','rideentranceexitremove',
-    'trackplace','trackremove','tracksetbrakespeed','footpathplace','footpathremove','footpathadditionplace','footpathadditionremove',
+    'mazeplacetrack','mazesettrack','trackplace','trackremove','tracksetbrakespeed','footpathplace','footpathremove','footpathadditionplace','footpathadditionremove',
     'staffhire','stafffire','staffsetorders','staffsetname','staffsetpatrolarea','staffsetcolour',
     'parksetname','parksetentrancefee','parksetloan','parksetparameter','parksetresearchfunding','parkmarketing',
     'landsetheight','landbuyrights','surfacesetstyle','watersetheight','smallsceneryplace','smallsceneryremove','wallplace','wallremove','gamesetspeed','pausetoggle'];
@@ -31,5 +31,5 @@ const bundle=header+'var BRIDGE_CONFIG='+JSON.stringify(config)+';\nvar TRACK_NA
     fs.readFileSync(path.join(root,'src/core.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/plugin.js'),'utf8');
 fs.mkdirSync(path.join(root,'dist'),{recursive:true});
 fs.writeFileSync(path.join(root,'dist/agent-bridge.js'),bundle);
-fs.writeFileSync(path.join(root,'dist/build-info.json'),JSON.stringify({version:'0.1.0',openrct2:'0.5.5',api:122,sourceCommit:'8694e3483690323b6a75fa7264b6c58116f51f31',sha256:crypto.createHash('sha256').update(bundle).digest('hex'),actions:allow.length,trackNames:Object.keys(names).length},null,2)+'\n');
+fs.writeFileSync(path.join(root,'dist/build-info.json'),JSON.stringify({version:'0.1.1',openrct2:'0.5.5',api:122,sourceCommit:'8694e3483690323b6a75fa7264b6c58116f51f31',sha256:crypto.createHash('sha256').update(bundle).digest('hex'),actions:allow.length,trackNames:Object.keys(names).length},null,2)+'\n');
 console.log('Built dist/agent-bridge.js ('+allow.length+' actions, '+Object.keys(names).length+' track types)');
