@@ -8,11 +8,11 @@ $files = @(
     '.gitignore', 'README.md', 'AGENTS.md', 'SETUP.md', 'START-HERE.md',
     'VERIFICATION.md', 'RELEASE-CHECKS.md', 'SKOOL-POST.md', 'LICENSE', 'package.json', 'cli.js',
     'src/core.js', 'src/plugin.js',
-    'scripts/build.js', 'scripts/extract-fixtures.js', 'scripts/Install-Bridge.ps1',
+    'scripts/build.js', 'scripts/extract-fixtures.js', 'scripts/maze-layout.js', 'scripts/Install-Bridge.ps1',
     'scripts/Start-Bridge.ps1', 'scripts/Setup-Bridge.ps1', 'scripts/Package-Source.ps1',
     'test/core.test.js', 'test/plugin.test.js', 'test/client.test.js', 'test/maze.test.js', 'test/fixtures/segments.json',
     'examples/custom-coaster-plan.json', 'examples/build-coaster.template.json',
-    'examples/park-management.template.json', 'generated/actions.json', 'generated/track-names.json'
+    'examples/park-management.template.json', 'examples/maze-layout.json', 'generated/actions.json', 'generated/track-names.json'
 )
 New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
 $archive = Join-Path $OutputDirectory ('openrct2-agent-bridge-source-' + [guid]::NewGuid().ToString() + '.zip')

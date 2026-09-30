@@ -1,0 +1,80 @@
+{
+  "title": "Three-corridor maze syntax example",
+  "license": "SPDX-License-Identifier: GPL-3.0-only",
+  "source": {
+    "repository": "OpenRCT2/OpenRCT2",
+    "commit": "8694e3483690323b6a75fa7264b6c58116f51f31",
+    "description": "Native cell/wall and entrance hedge-clearing rules; see scripts/maze-layout.js attribution."
+  },
+  "description": "Relative 3x3 tiles with three horizontal routes joined by side columns. These pre-gate masks illustrate syntax and topology, not guest throughput or AI behavior. Native gates are applied last.",
+  "tiles": [
+    {
+      "x": 0,
+      "y": 0,
+      "mazeEntry": 12115
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "mazeEntry": 12277
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "mazeEntry": 13045
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "mazeEntry": 12114
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "mazeEntry": 12277
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "mazeEntry": 4853
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "mazeEntry": 12278
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "mazeEntry": 12277
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "mazeEntry": 8181
+    }
+  ],
+  "gates": [
+    {
+      "kind": "entrance",
+      "x": -1,
+      "y": 1,
+      "direction": 2
+    },
+    {
+      "kind": "exit",
+      "x": 3,
+      "y": 1,
+      "direction": 0
+    }
+  ],
+  "expected": {
+    "totalCells": 22,
+    "reachableCells": 22,
+    "internalEdges": 23,
+    "cycleRank": 2,
+    "solutionCells": 6,
+    "exitRoutes": 3,
+    "exitRoutesLabel": ">=3"
+  }
+}

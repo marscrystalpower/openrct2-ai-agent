@@ -55,3 +55,77 @@ test('non-maze elements never access the maze-only native getter',()=>{
   assert.equal(r.ok,true);assert.equal(Object.hasOwn(r.result[0].elements[0],'mazeEntry'),false);
  }
 });
+
+const {analyzeMaze}=require('../scripts/maze-layout');
+const multiRouteExample=require('../examples/maze-layout.json');
+const copyExample=()=>JSON.parse(JSON.stringify(multiRouteExample));
+function closeLane(layout,row){layout.tiles.find(tile=>tile.x===1&&tile.y===row).mazeEntry|=1<<14;}
+
+test('maze reference has three independent exit routes and no isolated cells',()=>{
+ const r=analyzeMaze(multiRouteExample);
+ assert.equal(r.valid,true);assert.deepEqual(r.errors,[]);
+ assert.equal(r.tileCount,9);assert.equal(r.totalCells,22);assert.equal(r.reachableCells,22);
+ assert.equal(r.internalEdges,23);assert.equal(r.cycleRank,2);assert.equal(r.solutionCells,6);
+ assert.equal(r.exitRoutes,3);assert.equal(r.exitRoutesCapped,true);assert.equal(r.exitRoutesLabel,'>=3');
+});
+
+test('closing cross-connections detects two-route and single-route layouts',()=>{
+ const layout=copyExample();closeLane(layout,0);
+ let r=analyzeMaze(layout);assert.equal(r.valid,true);assert.equal(r.exitRoutes,2);assert.equal(r.cycleRank,1);
+ closeLane(layout,2);r=analyzeMaze(layout);
+ assert.equal(r.valid,true);assert.equal(r.reachableCells,22);assert.equal(r.solutionCells,6);
+ assert.equal(r.exitRoutes,1);assert.equal(r.exitRoutesCapped,false);assert.equal(r.cycleRank,0);
+});
+
+test('cycles on an entrance branch do not disguise a single exit bottleneck',()=>{
+ const layout=copyExample();
+ for(const row of [0,2]){
+  layout.tiles.find(tile=>tile.x===2&&tile.y===row).mazeEntry|=1<<14;
+ }
+ // Add a loop between the upper and middle lanes on the entrance side.
+ // The remaining middle corridor still has a single passage to the exit side.
+ layout.tiles.find(tile=>tile.x===1&&tile.y===0).mazeEntry&=~((1<<7)|(1<<2)|(1<<5));
+ layout.tiles.find(tile=>tile.x===1&&tile.y===1).mazeEntry&=~(1<<0);
+ const r=analyzeMaze(layout);
+ assert.equal(r.valid,true);assert.equal(r.reachableCells,r.totalCells);
+ assert.equal(r.cycleRank,1);
+ assert.equal(r.exitRoutes,1);
+});
+
+test('maze topology rejects a disconnected exit even when gate openings exist',()=>{
+ const layout=copyExample();for(const row of [0,1,2])closeLane(layout,row);
+ const r=analyzeMaze(layout);assert.equal(r.valid,false);assert.equal(r.exitRoutes,0);
+ assert.ok(r.errors.some(error=>error.code==='EXIT_UNREACHABLE'));
+});
+
+test('maze topology rejects asymmetric walls and unintended outside or filled-cell openings',()=>{
+ for(const mutate of [
+  layout=>{layout.tiles.find(tile=>tile.x===0&&tile.y===0).mazeEntry|=1<<12;},
+  layout=>{layout.tiles.find(tile=>tile.x===0&&tile.y===0).mazeEntry&=~(1<<1);},
+  layout=>{layout.tiles.find(tile=>tile.x===1&&tile.y===0).mazeEntry&=~(1<<2);}
+ ]){
+  const layout=copyExample();mutate(layout);const r=analyzeMaze(layout);
+  assert.equal(r.valid,false);assert.equal(r.exitRoutes,0);
+  assert.ok(r.errors.some(error=>['WALL_ASYMMETRY','OPENING_TO_ABSENT_CELL'].includes(error.code)));
+ }
+});
+
+test('maze topology validates coordinates, masks, gates, duplicate tiles and input bounds',()=>{
+ for(const mutate of [
+  layout=>{layout.tiles[0].x=0.5;},
+  layout=>{layout.tiles[0].mazeEntry=65536;},
+  layout=>{layout.tiles.push({...layout.tiles[0]});},
+  layout=>{layout.gates[0].direction=4;},
+  layout=>{layout.gates[0].x=-10;},
+  layout=>{layout.gates[1].kind='entrance';},
+  layout=>{layout.tiles=Array.from({length:1025},()=>({...layout.tiles[0]}));}
+ ]){
+  const layout=copyExample();mutate(layout);assert.equal(analyzeMaze(layout).valid,false);
+ }
+ assert.equal(analyzeMaze(null).valid,false);
+});
+
+test('maze analysis leaves pre-gate construction masks unchanged',()=>{
+ const layout=copyExample(),before=JSON.stringify(layout);
+ analyzeMaze(layout);assert.equal(JSON.stringify(layout),before);
+});

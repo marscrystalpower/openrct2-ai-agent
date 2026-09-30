@@ -21,4 +21,12 @@ Repository: https://github.com/FTPAiYT/openrct2-agent-bridge
 - The build produced 41 action schemas and 353 track identifiers. All 43 automated tests passed, including 12 maze tests; plugin and maze tests mock the engine. Client tests use real local TCP.
 - Existing geometry/build assertions now match the current 12-piece banked syntax example. Historical 48-piece native evidence remains separate.
 - The explicit 29-file source archive was inspected for private paths and credentials. The old token-bearing root bundle is removed from the current source tree and ignored; new bundles and tokens are built locally. This does not rewrite earlier Git history.
-- Native maze construction, gate changes, guest access and guest completion have not yet been verified. This update does not qualify fresh-machine setup or claim turnkey installation.
+- At publication of 0.1.1, native maze construction, gate changes, guest access and guest completion were still pending; subsequent evidence is recorded below. This update does not qualify fresh-machine setup or claim turnkey installation.
+
+## Multi-route maze checks, 2026-09-29
+
+- README now favors two or three exit routes and evaluates escape thoughts, waiting times and sustained completion rates. AGENTS.md is unchanged.
+- The offline checker applies pinned native gate rules, verifies wall reciprocity and reachability, and checks independent routes between gate regions. Its CLI rejects invalid layouts and single-route layouts. The example has three route choices, two cycles and a six-cell shortest solution; these are topology results rather than predictions of guest behavior.
+- All 50 automated tests passed. Regression checks cover one and two remaining routes, a loop with an exit bottleneck, disconnected exits, malformed masks and coordinates, unintended openings and input immutability. The CLI accepted the multi-route example and rejected the single-route case.
+- The inspected source archive includes the checker and example through the explicit packaging allowlist. Installed plugin code and native action schemas do not change in this update.
+- Native construction and guest completion were verified for the original single-route maze, while reported congestion showed that better throughput needs additional design and operating checks. The revised multi-route example has not been built or observed in the native game.

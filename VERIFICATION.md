@@ -20,4 +20,6 @@ The maze action schemas and read-back field come from the pinned OpenRCT2 v0.5.5
 
 All 43 automated tests passed on Windows on 2026-09-29, including 12 maze tests. Automated maze tests use a mocked engine. They cover exact schemas, read-only queries, authentication and arming, invalid rides and native arguments, budget and clearance rejection, duplicate receipt recovery, STOP, and maze-only mask read-back. Two older fixture assertions were updated to match the current 12-piece banked example. These checks do not establish native maze placement or guest operation.
 
-Native maze construction, gate effects, access and guests completing the maze remain pending an authorized gameplay session. No save or screenshot is included in the source package.
+Native full-tile maze construction, wall-mask read-back, gate changes, legal guest access and guests completing the maze were verified on 2026-09-29 in an existing park. The single-route layout also produced reported long queues and escape thoughts. Successful exits alone did not establish satisfactory throughput. No save, screenshot or guest log is included in the source package.
+
+The multi-route example and offline checker provide topology evidence, including independent routes between gate regions. All 50 automated tests passed, including seven additional topology checks. Native guest-flow checks remain necessary for each resulting design; the checker does not model guest decisions or predict completion times.

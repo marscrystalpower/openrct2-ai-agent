@@ -87,7 +87,13 @@ Maze construction uses the native `mazeplacetrack` and `mazesettrack` actions, r
 - `mazesettrack` edits a half-tile cell at world x/y multiples of 16. `direction` is 0..3, `mode` is 0 (build), 1 (move), or 2 (fill), and `isInitialPlacement` is a required boolean.
 - Both actions require world z aligned to 16 and a valid, closed Maze ride. The engine's query still decides normal ownership, clearance, terrain and construction legality.
 
-Bounded `map` inspection includes the native `mazeEntry` mask for Maze track elements. Inspect these masks again after placing entrances and exits, because gates change the adjoining maze walls. Verify connected cells, a usable entrance-to-exit route, normal gate/path legality, and a native screenshot before opening. Mazes do not use coaster train testing; observe guests entering and leaving to verify operation.
+Default to two or three routes to the exit, with useful cross-connections, modest route lengths and short dead ends. A long, unique solution can make guests wander repeatedly and reduce throughput.
+
+Before construction, describe relative pre-gate tile masks and gates using the format in `examples/maze-layout.json`, then run `node scripts/maze-layout.js YOUR-LAYOUT.json`. The checker applies native gate openings, checks connectivity and reports up to three independent route choices between the gate regions; it fails when the layout is invalid or has fewer than two routes. Shared gate cells are allowed. The example demonstrates the format; choose a fresh layout for the park and translate its relative coordinates to a surveyed world location.
+
+Bounded `map` inspection includes the native `mazeEntry` mask for Maze track elements. Inspect these masks again after placing entrances and exits, because gates change the adjoining maze walls. Verify the resulting routes, normal gate/path legality, and a native screenshot before opening.
+
+Mazes need operating guest-flow checks. Observe completed visits over elapsed game time, queue waits, crowding and escape thoughts such as “I want to get out.” If guests struggle or queues grow, add useful cross-connections or shorten troublesome routes, then observe again. Connectivity and a completed visit establish that escape is possible; sustained guest flow establishes whether the design works well.
 
 ## Coaster design is not prescribed
 
