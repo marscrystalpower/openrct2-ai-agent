@@ -6,14 +6,15 @@ const config=JSON.parse(fs.readFileSync(path.join(__dirname,'../bridge.config.js
 function harness(options={}){
  let connection,serial=0;
  const sent=[],calls=[],queries=[],timers=[],store={},hooks={};
- const rides=options.rides??[{id:15,type:20,status:'closed'}];
+ const mazeObject={index:0,rideType:[20]};
+ const rides=options.rides??[{id:15,type:20,object:mazeObject,status:'closed'}];
  const listener={on:(e,fn)=>{connection=fn;return listener;},listen:()=>listener};
  const context={mode:'normal',apiVersion:122,paused:false,gameSpeed:1,
   sharedStorage:{get:k=>store[k],set:(k,v)=>{store[k]=v;}},subscribe:(e,fn)=>{hooks[e]=fn;},
   getAllTrackSegments:()=>[],setTimeout:fn=>{timers.push(fn);},
   queryAction:(action,args,cb)=>{queries.push({action,args});cb(options.rejectQuery?{error:1,errorMessage:'Clearance rejected',cost:0}:{error:0,cost:100});},
   executeAction:(action,args,cb)=>{calls.push({action,args});cb({error:0,cost:100});}};
- vm.runInNewContext(bundle,{objectManager:{getObject:()=>null,getAllObjects:()=>[]},context,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides,getRide:id=>rides.find(r=>r.id===id),getTile:()=>({elements:options.elements??[]})},park:{cash:10000},scenario:{},date:{},console:{log:()=>{}},registerPlugin:m=>m.main()});
+ vm.runInNewContext(bundle,{objectManager:{getObject:(type,index)=>index===0?mazeObject:null,getAllObjects:()=>[mazeObject]},context,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides,getRide:id=>rides.find(r=>r.id===id),getTile:()=>({elements:options.elements??[]})},park:{cash:10000,research:{isObjectResearched:()=>true}},scenario:{},date:{},console:{log:()=>{}},registerPlugin:m=>m.main()});
  const events={};connection({on:(e,fn)=>{events[e]=fn;},write:s=>sent.push(JSON.parse(s)),end:()=>{}});
  function request(op,args={},extra={}){const req={id:'maze-test-'+(++serial),op,args,token:config.token,...extra};events.data(JSON.stringify(req)+'\n');return req;}
  function result(req){return sent.find(x=>x.id===req.id);}
