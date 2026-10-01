@@ -27,6 +27,7 @@ No game assets, saved parks, screenshots, authentication tokens, session records
 - New-coaster construction or appending to an existing closed ride; optional entrance/exit placement and testing; existing-track traversal with gap/circuit detection.
 - Screenshots and uniquely named save checkpoints.
 - Loopback authentication, read-only startup, session-bound writes, spend prechecks, STOP, per-action receipts, and a client journal that refuses to resend an existing mutation ID.
+- Researched-only ride construction, enforced by the bridge before native queries and again before execution.
 
 ## Setup (for the agent)
 
@@ -64,11 +65,32 @@ For anything complex, place this shape in a JSON file and use `node cli.js reque
 
 Use `action.execute` with the same action/args plus `maxCost` to execute; `batch.execute` takes an `actions` array and a shared `maxCost`. Argument names and required fields are in generated/actions.json or `node cli.js schema`. Arbitrary JavaScript, action flags, cheats, file paths, multiplayer actions, and unlisted actions are not accepted.
 
+**Ride research:** `objects {"type":"ride"}` lists loaded objects, including ones that have not been researched. Each ride object now includes `researched`: `true`, `false`, or `null` if the native research status cannot be read. Select an explicit object `index` with `researched:true` and a supported, non-null `rideType`. Automatic object selection (`rideObject:65535` or `-1`) is rejected.
+
+The bridge checks `park.research.isObjectResearched("ride", index)` in the pinned API rather than trusting the loaded catalog, invented/uninvented lists, or a successful engine query. Direct `ridecreate`, batches, and `coaster.build` use the same guard. It also covers new track, maze build cells, entrances/exits, and vehicle or ride-type changes on existing rides, including `track.build`. Research-bypass cheats do not override this restriction. Missing or unreadable research status blocks these construction actions; use the pinned OpenRCT2 v0.5.5 / API 122. Closing, ordinary ride management, demolition, track/gate removal, and maze move/fill remain available for existing rides. Native legality, cost, and operating checks still apply.
+
 **Units:** map inspection uses tile coordinates. Construction uses world x/y (32 per tile), world z (8 per base-height unit, 16 per land increment), and cardinal direction 0=(-x), 1=(+y), 2=(+x), 3=(-y). Directions 4..7 represent diagonal connections for the planner. Money is the engine's integer unit: 10 units = one pound/dollar in the default display. E.g. maxCost 100000 is £/$10,000. Ratings are fixed-point integers: 652 means 6.52. Consult engine schema/source for action-specific enums.
+
+## Build paths with matching object families
+
+Inspect the live `objects` catalogs before choosing path indices. `footpath` contains legacy combined paths; `footpath_surface` and `footpath_railings` contain the separate modern objects. Returned `type` and actual `index` identify the family and slot; array positions are not object indices. Modern surfaces also expose native `flags` and `isQueue` (`null` means it could not be verified).
+
+For `footpathplace`, use the pinned engine's `constructFlags` values:
+
+- `0`: regular modern path. `object` must be a loaded `footpath_surface` with `isQueue:false`; `railingsObject` must be a loaded `footpath_railings` index.
+- `1`: modern queue. The same families apply, with `isQueue:true` on the surface.
+- `2`: regular legacy path. `object` must be a loaded `footpath` index.
+- `3`: legacy queue, using the queue appearance built into that same legacy `footpath` object.
+
+Legacy paths supply their own railings. Their required `railingsObject` argument is ignored by the native engine; use `65535` (the null sentinel), or an unsigned 16-bit value. Modern paths require a real loaded railings object, so the sentinel is rejected there. All path object families have indices `0..254` in API 122, and an in-range index must still be loaded.
+
+The bridge rejects unknown construction bits, wrapped/sentinel object indices, missing or wrong-family objects, and modern queue/surface mismatches before native query and again before execution. This applies to direct actions and each batch step, including replacement of an existing path. It does not silently change flags or select another family. The same numeric index can legitimately exist in several catalogs; `constructFlags` selects the namespace, so an overlap alone is not an error. Regular-surface-as-queue cheats do not bypass the queue check.
+
+The native action can accept invalid object references and create invisible, walkable paths. Its success is therefore insufficient verification. `map` read-back exposes `object` for legacy paths, or `surfaceObject` and `railingsObject` for modern paths, together with `isQueue`. After building, check those references, native visibility, queue connections, and actual guest access. These guards do not repair existing paths or prove the resulting guest network works.
 
 ## Build a custom coaster
 
-1. Inspect land, finances, available ride objects, and station objects. Select the ride object's actual `index` and a compatible entry from its `rideType` array; IDs in the build template are placeholders.
+1. Inspect land, finances, available ride objects, and station objects. Select a ride object with `researched:true`, its actual `index`, and a compatible non-null entry from its `rideType` array; IDs in the build template are placeholders.
 2. Choose a surveyed start location and elevation. Update examples/custom-coaster-plan.json or create a new blueprint. The file examples/custom-coaster-plan.json is provided as a technical syntax example, not as a recommended coaster design or template. It demonstrates how a track.plan request expresses track pieces, repetition, slopes, banking and chain lifts. For a new coaster, create an independent piece sequence based on the intended ride concept, available terrain and space, budget, pacing, capacity, and desired guest experience. Do not copy what the README sample provides regarding station length, lift/drop arrangement, turn pattern, straight sections, brake placement, footprint, or overall sequence. Do not copy layouts merely because they appear in the example. A normal circuit coaster should use a closed track plan; unusual layouts such as shuttle coasters should only be used when they are deliberately part of the ride concept.
 3. Request `track.plan`. The returned `planId` is bound to this park session. It reports placements, footprint, potential shared-tile overlaps and exact geometric closure. Shared tiles can be legal because pieces use different quadrants; the engine decides clearance.
 4. Fill examples/build-coaster.template.json with the plan ID, actual ride/station objects, name, and spending limit. `coaster.build` creates the ride, places each piece, optionally places entrances/exits, and optionally requests testing. `track.build` instead takes `planId`, `ride`, and `maxCost` to add pieces to an existing closed ride.
