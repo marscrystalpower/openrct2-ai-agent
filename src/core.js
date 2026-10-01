@@ -38,7 +38,7 @@ var BridgeCore = (function () {
             var s = getSegment(type);
             if (!s || !s.elements || !s.elements.length) fail('Unsupported track type: '+spec.type);
             var repeat = spec.repeat === undefined ? 1 : integer(spec.repeat,'repeat',1,512);
-            if (spec.chain && !s.allowsChainLift) fail('Chain lift not allowed on '+spec.type);
+            if (spec.chain && !s.allowsChainLift && !s.requiresChainLift) fail('Chain lift not allowed on '+spec.type);
             for (var i=0;i<repeat;i++) {
                 if (steps.length >= 2048) fail('Maximum 2048 track pieces per plan');
                 var a;
@@ -57,7 +57,7 @@ var BridgeCore = (function () {
                 });
                 steps.push(Object.assign({},a.origin,{trackType:type,brakeSpeed:spec.brakeSpeed === undefined ? 8 : integer(spec.brakeSpeed,'brakeSpeed',0,255),
                     colour:spec.colour === undefined ? 0 : integer(spec.colour,'colour scheme',0,3),seatRotation:spec.seatRotation === undefined ? 0 : integer(spec.seatRotation,'seatRotation',0,15),
-                    trackPlaceFlags:(spec.chain ? 1 : 0) | (spec.inverted ? 2 : 0),isFromTrackDesign:false}));
+                    trackPlaceFlags:((spec.chain || s.requiresChainLift) ? 1 : 0) | (spec.inverted ? 2 : 0),isFromTrackDesign:false}));
                 cursor=a.next;
             }
         });

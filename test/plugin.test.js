@@ -1,17 +1,17 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
-const fixtures=require('./fixtures/segments.json');
+const fixtures=require('./fixtures/segments.json'),supportData=require('../generated/track-support.json');
 const bundle=fs.readFileSync(path.join(__dirname,'../dist/agent-bridge.js'),'utf8');
 const config=require('../bridge.config.json');
 function harness(options={}){
     let connection;const hooks={},sent=[],calls=[],queries=[],timers=[],store=options.store||{},rideList=options.rides||[],saved=[];let nextRide=12;
-    const objects=options.objects||[{index:0,rideType:[0]}];
+    const objects=(options.objects||[{index:0,rideType:[0]}]).map(o=>({defaultVehicle:255,vehicles:Array.from({length:4},()=>({carVisual:0,flags:0})),...o}));
     const research=Object.hasOwn(options,'research')?options.research:{isObjectResearched:()=>true};
     const objectManager={getObject:(type,index)=>objects.find(o=>o.index===index),getAllObjects:()=>objects};
     const listener={on:(event,fn)=>{connection=fn;return listener;},listen:(port,host)=>{assert.equal(host,'127.0.0.1');return listener;}};
     const context={mode:'normal',apiVersion:122,paused:false,gameSpeed:0,
         sharedStorage:{get:k=>store[k],set:(k,v)=>{store[k]=JSON.parse(JSON.stringify(v));}},subscribe:(name,fn)=>{hooks[name]=fn;},
-        getTrackSegment:id=>fixtures[id],getAllTrackSegments:()=>Object.values(fixtures),setTimeout:fn=>{timers.push(fn);},
+        getTrackSegment:id=>fixtures[id]&&({...fixtures[id],trackGroup:supportData.segments[id].trackGroup,isSteepUp:supportData.segments[id].flags.isSteepUp}),getAllTrackSegments:()=>Object.values(fixtures),setTimeout:fn=>{timers.push(fn);},
         saveGame:opts=>{if(options.failSave)throw Error('disk unavailable');saved.push(opts);},
         queryAction:(action,args,cb)=>{queries.push({action,args:JSON.parse(JSON.stringify(args))});if(options.onQuery)options.onQuery(action,args);cb(options.rejectQuery===calls.length?{error:1,errorMessage:'Blocked'}:{cost:10});},
         executeAction:(action,args,cb)=>{
@@ -20,7 +20,7 @@ function harness(options={}){
             if(action==='ridecreate'){const id=nextRide++;rideList.push({id,type:args.rideType,object:objectManager.getObject('ride',args.rideObject),status:'closed'});cb({cost:10,ride:id});}
             else cb({cost:10});
         }};
-    vm.runInNewContext(bundle,{context,objectManager,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:rideList,getRide:id=>rideList.find(r=>r.id===id),getTrackIterator:options.iterator},park:{cash:10000,research},scenario:{},date:{},console:{log:()=>{}},registerPlugin:meta=>meta.main()});
+    vm.runInNewContext(bundle,{context,objectManager,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:rideList,getRide:id=>rideList.find(r=>r.id===id),getTrackIterator:options.iterator,getTile:()=>({elements:[]})},park:{cash:10000,research},scenario:{},date:{},console:{log:()=>{}},registerPlugin:meta=>meta.main()});
     const events={};connection({on:(e,fn)=>{events[e]=fn;},write:line=>sent.push(JSON.parse(line)),end:()=>{}});
     let serial=10000000;
     function request(op,args={},extra={}){
@@ -228,7 +228,8 @@ test('vehicle and ride-type changes cannot bypass research or object compatibili
     for(const action of actions)for(const researched of [false,true]){
         const h=harness({objects,rides,research:researchStatus(researched)});h.arm();
         const reply=finalReply(h,h.request('action.execute',{...action,maxCost:100},{session:h.session}));
-        assert.equal(reply.result.state,researched?'completed':'partial');assert.equal(h.calls.length,researched?1:0);
+        const permitted=researched && action.action==='ridesetvehicle';
+        assert.equal(reply.result.state,permitted?'completed':'partial');assert.equal(h.calls.length,permitted?1:0);
     }
     for(const action of [{action:'ridesetvehicle',args:{ride:1,type:2,value:7,colour:0}},{action:'ridesetsetting',args:{ride:1,setting:10,value:39}}]){
         const h=harness({objects:[...objects,cinemaObject],rides});assert.equal(h.request('action.query',action).reply.ok,false);assert.equal(h.queries.length,0);

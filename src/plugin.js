@@ -2,7 +2,7 @@
 (function () {
     'use strict';
     function main() {
-        var C=BridgeCore, armed=false, busy=false, generation=0, plans=Object.create(null), clients=[];
+        var C=BridgeCore, trackGuard=BridgeTrackGuard.create(BridgeCore,TRACK_SUPPORT,context,objectManager), armed=false, busy=false, generation=0, plans=Object.create(null), clients=[];
         var session=newSession();
         var storageKey='agent-bridge.receipts.v1';
         var receipts=context.sharedStorage.get(storageKey) || {};
@@ -63,6 +63,14 @@
                 }
             }
         }
+        function validateTrackConstruction(action,args){
+            if(action==='trackplace'){
+                var ride=getRide(args.ride);
+                trackGuard.support(ride.type).validate(args.trackType,args.trackPlaceFlags,false);
+            } else if(action==='ridesetsetting' && args.setting===10){
+                error('Changing ride type requires a cheat and is not supported by normal construction; keep this ride type or create a researched compatible ride');
+            }
+        }
         function requirePathObject(type,index){
             // API 122 has 255 slots per path family (indices 0..254).
             // The uint16 null sentinel and wrapped indices are never objects.
@@ -95,7 +103,7 @@
                 if(isQueue!==((args.constructFlags&1)!==0))error('Path queue flag does not match footpath_surface '+args.object+'; use a queue surface with constructFlags 1 or a regular surface with constructFlags 0');
             }
         }
-        function segmentView(s){return Object.assign(pick(s,['type','description','beginZ','endZ','endX','endY','beginDirection','endDirection','beginSlope','endSlope','beginBank','endBank','length','elements','trackGroup','allowsChainLift','isInversion','isBanked','mirrorSegment']),{name:reverseNames[s.type]});}
+        function segmentView(s){return Object.assign(pick(s,['type','description','beginZ','endZ','endX','endY','beginDirection','endDirection','beginSlope','endSlope','beginBank','endBank','length','elements','trackGroup','allowsChainLift','isSteepUp','isInversion','isBanked','mirrorSegment']),{name:reverseNames[s.type],requiresChainLift:!!(TRACK_SUPPORT.segments[s.type] && TRACK_SUPPORT.segments[s.type].forceChain)});}
         var reverseNames={};Object.keys(TRACK_NAMES).forEach(function(k){reverseNames[TRACK_NAMES[k]]=k;});
         function walk(args){
             C.integer(args.x,'tile x',0,map.size.x-1);C.integer(args.y,'tile y',0,map.size.y-1);C.integer(args.elementIndex,'elementIndex',0,255);
@@ -160,11 +168,27 @@
                 if(types.indexOf(a.type)<0)error('Supported object types: '+types.join(', '));
                 return objectManager.getAllObjects(a.type).map(function(o){var result=pick(o,['type','index','identifier','name','description','rideType','minCarsInTrain','maxCarsInTrain','carsPerFlatRide']);if(a.type==='ride')result.researched=rideResearchStatus(o.index);if(a.type==='footpath_surface'){Object.assign(result,pick(o,['flags']));result.isQueue=pathSurfaceIsQueue(o);}return result;});
             }
-            case 'track.catalog':return context.getAllTrackSegments().map(segmentView);
+            case 'track.catalog':{
+                var check=null;
+                if(a.ride!==undefined){var target=getRide(a.ride);requireResearchedRide(target.type,target.object && target.object.index);check=trackGuard.support(target.type);}
+                else if(a.rideType!==undefined || a.rideObject!==undefined){requireResearchedRide(a.rideType,a.rideObject);check=trackGuard.support(a.rideType);}
+                var variant=a.inverted===true?2:0;
+                return context.getAllTrackSegments().map(function(s){
+                    var result=segmentView(s);
+                    if(check){
+                        try{result.requiresChainLift=check.requiresChain(s.type);}catch(e){}
+                        try{check.validate(s.type,variant|(result.requiresChainLift?1:0),false);result.supported=true;}
+                        catch(e){result.supported=false;result.supportReason=e.message;}
+                        try{check.validate(s.type,variant|1,false);result.chainSupported=true;}
+                        catch(e){result.chainSupported=false;result.chainReason=e.message;}
+                    }
+                    return result;
+                });
+            }
             case 'track.walk':return walk(a);
             case 'track.plan':{
                 if(Object.keys(plans).length>=100)error('Plan cache full; reload park to clear');
-                var plan=C.plan(a,function(t){return context.getTrackSegment(t);},TRACK_NAMES,map.size);
+                var plan=C.plan(a,function(t){var s=context.getTrackSegment(t);return s?segmentView(s):null;},TRACK_NAMES,map.size);
                 var id=newSession();plans[id]={session:session,plan:plan};return Object.assign({planId:id,session:session},plan);
             }
             default:error('Unknown operation '+req.op);
@@ -174,6 +198,7 @@
             C.validateAction(action,args,ACTION_SCHEMAS);
             validateRideConstruction(action,args);
             validatePathConstruction(action,args);
+            validateTrackConstruction(action,args);
             if(action==='mazeplacetrack'||action==='mazesettrack'){
                 var mazeRide=getRide(args.ride);
                 if(mazeRide.type!==20)error('Maze action requires a Maze ride');
@@ -235,6 +260,13 @@
                 try{
                     if(!valid()){finish('stopped','Session changed or STOP requested');return;}
                     if(index===actions.length){finish('completed',{actions:actions.length,planClosed:plan?plan.closed:undefined,physicsVerified:false});return;}
+                    if(index===0 && plan){
+                        var planType=req.op==='coaster.build'?args.create.rideType:getRide(rideId).type;
+                        if(req.op==='coaster.build')requireResearchedRide(planType,args.create.rideObject);
+                        else {var planRide=getRide(rideId);requireResearchedRide(planType,planRide.object && planRide.object.index);}
+                        var support=trackGuard.support(planType);
+                        plan.steps.forEach(function(step,i){try{support.validate(step.trackType,step.trackPlaceFlags,false);}catch(e){error('Plan piece '+i+': '+e.message);}});
+                    }
                     var item=actions[index];if(item.useRide)item.args.ride=rideId;
                     receipt.next={index:index,action:item.action,args:item.args};persist();
                     query(item.action,item.args,function(q){
@@ -246,6 +278,7 @@
                             // never execute on a stale successful precheck.
                             validateRideConstruction(item.action,item.args);
                             validatePathConstruction(item.action,item.args);
+                            validateTrackConstruction(item.action,item.args);
                             receipt.inFlight={index:index,action:item.action,args:item.args};persist();
                             context.executeAction(item.action,item.args,function(r){
                                 try{
