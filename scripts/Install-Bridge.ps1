@@ -2,13 +2,15 @@
 param()
 $ErrorActionPreference = 'Stop'
 $bridgeRoot = Split-Path $PSScriptRoot -Parent
-$release = 'v0.5.5'
+$compatibility = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'compatibility.json') -Raw | ConvertFrom-Json
+$release = 'v' + $compatibility.openrct2
 $asset = "OpenRCT2-$release-windows-portable-x64.zip"
 $runtimeRoot = Join-Path $bridgeRoot "runtime\$release"
 $cacheRoot = Join-Path $bridgeRoot 'runtime\downloads'
 $bundle = Join-Path $bridgeRoot 'dist\agent-bridge.js'
 if (-not (Test-Path -LiteralPath $bundle)) { throw 'Build first: node scripts/build.js' }
 $buildInfo = Get-Content -LiteralPath (Join-Path $bridgeRoot 'dist\build-info.json') -Raw | ConvertFrom-Json
+if ($buildInfo.openrct2 -ne $compatibility.openrct2 -or $buildInfo.api -ne $compatibility.api -or $buildInfo.sourceCommit -ne $compatibility.sourceCommit) { throw 'Build compatibility does not match the pinned runtime; rebuild before installing.' }
 if ((Get-FileHash -LiteralPath $bundle -Algorithm SHA256).Hash.ToLowerInvariant() -ne $buildInfo.sha256) { throw 'Plugin build hash mismatch' }
 New-Item -ItemType Directory -Force -Path $cacheRoot | Out-Null
 $zipPath = Join-Path $cacheRoot $asset

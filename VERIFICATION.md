@@ -1,5 +1,19 @@
 # Verification and release status
 
+## OpenRCT2 0.5.6 qualification — 2026-10-10
+
+Bridge 0.1.2 targets Windows x64, OpenRCT2 0.5.6 and scripting API 124, pinned to upstream commit `82b309798a83346b7f9fc61a53847f4323deb19d`.
+
+- Build and all 166 automated tests pass, with no skipped tests. An independent source audit compared all 41 action schemas with native parameter visitors. Research bitmap and path-family guards remain compatible; the 103 ride descriptors, 350 track pieces and 90 group definitions are unchanged.
+- The source-verified palette has 74 IDs, including 18 additions at 56..73. All 18 new IDs were executed and read back in a real game for track main/additional/support colours and vehicle body/trim/tertiary colours: 108 successful property checks. Scenery placement/read-back and staff recolouring also passed native execution.
+- Both new required `surfacesetstyle` colour arguments are supplemented from native source because upstream declarations omit them. Native query and execution succeeded. Invalid IDs, omitted terrain colours, queue/surface mismatches, automatic ride-object selection and invalid authentication were rejected as expected.
+- A fresh 64-piece Twister circuit was constructed in a hilly scenario with normal native clearance checks. Native terrain rejection stopped a partial batch, whose receipt and live track were reconciled before only the remaining work was submitted. A bounded terrain adjustment allowed completion without clearance cheats. Native traversal confirmed all 64 segments form a circuit; the test train completed it and produced ratings of 4.98 excitement, 3.51 intensity and 1.74 nausea. Recorded forces were +2.57/-0.47 vertical G and 1.07 lateral G.
+- Queue references, gates, matching elevations and native rendering were inspected. Guests boarded and completed visits after opening. A unique final checkpoint was verified on disk and reloaded: circuit, ratings, colours, customers and cash persisted. The bridge changed session and returned to read-only mode. No crashes or unexplained mutation outcomes were observed.
+
+This qualifies the exercised bridge workflow; it does not claim native testing of all 41 actions, all rides or all 350 track pieces. Terrain primary colours and recolouring capability are not exposed in scripting API 124; recolouring fixed-colour terrain objects was not visually qualified. Older evidence below describes prior releases.
+
+## Previous qualification
+
 Community test release, prepared 2026-09-19. Windows x64; OpenRCT2 v0.5.5, API 122.
 
 ## Historical development evidence

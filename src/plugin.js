@@ -14,11 +14,12 @@
         function error(message){throw new Error(message);}
         function playable(){if(context.mode!=='normal' && context.mode!=='track_designer') error('Load a park first'); if(network.mode!=='none') error('Bridge supports single-player only');}
         function allowed(req){playable();if(!armed) error('Bridge is read-only; arm this session first');if(req.session!==session) error('Stale or missing session');}
+        function compatible(){if(context.apiVersion!==BRIDGE_INFO.api)error('Bridge requires OpenRCT2 v'+BRIDGE_INFO.openrct2+' / API '+BRIDGE_INFO.api+'; API version is '+context.apiVersion);}
         function pick(obj,keys){var result={};keys.forEach(function(k){try{if(obj[k]!==undefined){var v=obj[k];result[k]=(typeof v==='number' && !Number.isFinite(v)) || (typeof v==='number' && Math.abs(v)>Number.MAX_SAFE_INTEGER)?null:v;}}catch(e){result[k]=null;}});return result;}
-        function rideView(r){var result=pick(r,['id','type','name','classification','status','mode','price','excitement','intensity','nausea','vehicles','reliability','downtime','guestCount','incomePerHour','profit','totalCustomers','maxSpeed','averageSpeed','rideTime','rideLength','maxPositiveVerticalGs','maxNegativeVerticalGs','maxLateralGs','totalAirTime','numDrops','numLiftHills']);result.stations=(r.stations||[]).map(function(s,i){return Object.assign({index:i},pick(s,['start','length','entrance','exit','queueTime']));}).filter(function(s){return s.length>0;});return result;}
+        function rideView(r){var result=pick(r,['id','type','name','classification','status','mode','price','excitement','intensity','nausea','vehicles','reliability','downtime','guestCount','incomePerHour','profit','totalCustomers','maxSpeed','averageSpeed','rideTime','rideLength','maxPositiveVerticalGs','maxNegativeVerticalGs','maxLateralGs','totalAirTime','numDrops','numLiftHills','colourSchemes','vehicleColours']);result.stations=(r.stations||[]).map(function(s,i){return Object.assign({index:i},pick(s,['start','length','entrance','exit','queueTime']));}).filter(function(s){return s.length>0;});return result;}
         function getRide(id){C.integer(id,'ride',0,65534);var r=map.getRide(id);if(!r)error('Ride does not exist');return r;}
         function rideResearchStatus(index){
-            // API 122 reads the native invention bitmap. Research lists can contain
+            // API 124 reads the native invention bitmap. Research lists can contain
             // the item still being researched, and loaded objects are not unlocks.
             try{
                 var research=park.research;
@@ -36,7 +37,7 @@
             if(!object || object.index!==objectIndex)error('Ride object is not loaded: '+objectIndex);
             if(!Array.isArray(object.rideType) || object.rideType.indexOf(rideType)<0)error('Ride object '+objectIndex+' does not support ride type '+rideType);
             var researched=rideResearchStatus(objectIndex);
-            if(researched===null)error('Cannot verify ride research status; construction is blocked. Use OpenRCT2 v0.5.5 / API 122 and inspect the park before retrying');
+            if(researched===null)error('Cannot verify ride research status; construction is blocked. Use OpenRCT2 v0.5.6 / API 124 and inspect the park before retrying');
             if(!researched)error('Ride object '+objectIndex+' has not been researched; choose a researched ride object or wait for research to finish');
         }
         function validateRideConstruction(action,args){
@@ -71,8 +72,23 @@
                 error('Changing ride type requires a cheat and is not supported by normal construction; keep this ride type or create a researched compatible ride');
             }
         }
+        function validateColourArguments(action,args){
+            function colour(value,name){C.integer(value,name+' colour ID',COLOUR_PALETTE.minId,COLOUR_PALETTE.maxId);}
+            if(action==='trackplace')C.integer(args.colour,'track colour scheme',0,3);
+            else if(action==='ridesetappearance'){
+                C.integer(args.type,'ride appearance type',0,8);
+                // The Maze overload uses four wall styles, not palette colours.
+                if(args.type===2 && getRide(args.ride).type===20)C.integer(args.value,'maze wall style',0,3);
+                else if(args.type<=5)colour(args.value,'ride appearance');
+            } else if(action==='staffsetcolour')colour(args.colour,'staff');
+            else if(action==='smallsceneryplace'||action==='wallplace'){
+                ['primaryColour','secondaryColour','tertiaryColour'].forEach(function(k){colour(args[k],k);});
+            } else if(action==='surfacesetstyle'){
+                ['surfaceColour1','edgeColour1'].forEach(function(k){colour(args[k],k);});
+            }
+        }
         function requirePathObject(type,index){
-            // API 122 has 255 slots per path family (indices 0..254).
+            // API 124 has 255 slots per path family (indices 0..254).
             // The uint16 null sentinel and wrapped indices are never objects.
             C.integer(index,type+' object index',0,254);
             var object=objectManager.getObject(type,index);
@@ -99,7 +115,7 @@
                 var surface=requirePathObject('footpath_surface',args.object);
                 requirePathObject('footpath_railings',args.railingsObject);
                 var isQueue=pathSurfaceIsQueue(surface);
-                if(isQueue===null)error('Cannot verify footpath_surface queue flags; construction is blocked. Use OpenRCT2 v0.5.5 / API 122');
+                if(isQueue===null)error('Cannot verify footpath_surface queue flags; construction is blocked. Use OpenRCT2 v0.5.6 / API 124');
                 if(isQueue!==((args.constructFlags&1)!==0))error('Path queue flag does not match footpath_surface '+args.object+'; use a queue surface with constructFlags 1 or a regular surface with constructFlags 0');
             }
         }
@@ -125,12 +141,14 @@
             var t=map.getTile(x,y);
             return {x:x,y:y,elements:t.elements.map(function(el,index){
                 var result=Object.assign({elementIndex:index},pick(el,['type','baseZ','clearanceZ','slope','waterHeight','ownership','surfaceStyle','edgeStyle','direction','ride','station','trackType','sequence','hasChainLift','isInverted','edges','isQueue','isWide','queueBannerDirection','object','quadrant']));
+                if(['small_scenery','large_scenery','wall'].indexOf(el.type)>=0)Object.assign(result,pick(el,['primaryColour','secondaryColour','tertiaryColour']));
                 if(el.type==='footpath')Object.assign(result,pick(el,['surfaceObject','railingsObject']));
                 if(el.type==='track'){
                     var ride=map.getRide(el.ride);
                     if(ride && ride.type===20){
                         try{var mazeEntry=el.mazeEntry;if(mazeEntry!==undefined)result.mazeEntry=mazeEntry;}catch(e){result.mazeEntry=null;}
                     }
+                    else Object.assign(result,pick(el,['colourScheme']));
                 }
                 return result;
             })};
@@ -138,10 +156,11 @@
         function inspect(req){
             var a=req.args||{};
             switch(req.op){
-            case 'hello':return {bridgeVersion:'0.1.1',apiVersion:context.apiVersion,session:session,armed:armed,busy:busy,mode:context.mode,network:network.mode,operations:['hello','arm','stop','receipt','park','rides','ride','map','guests','staff','objects','actions','capture','save','track.catalog','track.plan','track.walk','action.query','action.execute','batch.execute','track.build','coaster.build']};
+            case 'hello':return {bridgeVersion:BRIDGE_INFO.version,openrct2:BRIDGE_INFO.openrct2,sourceCommit:BRIDGE_INFO.sourceCommit,targetApiVersion:BRIDGE_INFO.api,apiVersion:context.apiVersion,compatible:context.apiVersion===BRIDGE_INFO.api,session:session,armed:armed,busy:busy,mode:context.mode,network:network.mode,operations:['hello','arm','stop','receipt','park','rides','ride','map','guests','staff','objects','actions','colours','capture','save','track.catalog','track.plan','track.walk','action.query','action.execute','batch.execute','track.build','coaster.build']};
             case 'actions':return ACTION_SCHEMAS;
+            case 'colours':return COLOUR_PALETTE;
             case 'receipt':if(typeof a.id!=='string')error('receipt id required');return Object.prototype.hasOwnProperty.call(receipts,a.id)?receipts[a.id]:null;
-            case 'arm':playable();if(req.session!==session)error('Stale session');armed=true;return {armed:true,session:session};
+            case 'arm':playable();compatible();if(req.session!==session)error('Stale session');armed=true;return {armed:true,session:session};
             case 'stop':armed=false;generation++;return {armed:false,busy:busy,message:'Stops before the next action; an action already dispatched may finish.'};
             }
             playable();
@@ -195,7 +214,9 @@
             }
         }
         function query(action,args,cb){
+            compatible();
             C.validateAction(action,args,ACTION_SCHEMAS);
+            validateColourArguments(action,args);
             validateRideConstruction(action,args);
             validatePathConstruction(action,args);
             validateTrackConstruction(action,args);
@@ -219,6 +240,7 @@
                 var old=receipts[req.id];if(old.fingerprint!==fingerprint)error('Request ID already used for different content');send({id:req.id,ok:true,result:old});return;
             }
             allowed(req);if(busy)error('Another mutation is running');
+            compatible();
             if(Object.keys(receipts).length>=5000)error('Receipt journal full; archive it before continuing');
             if(req.op==='save'){
                 var filename='agent-checkpoint-'+req.id;
@@ -279,6 +301,8 @@
                             validateRideConstruction(item.action,item.args);
                             validatePathConstruction(item.action,item.args);
                             validateTrackConstruction(item.action,item.args);
+                            compatible();
+                            validateColourArguments(item.action,item.args);
                             receipt.inFlight={index:index,action:item.action,args:item.args};persist();
                             context.executeAction(item.action,item.args,function(r){
                                 try{
@@ -322,7 +346,7 @@
         });
         listener.listen(BRIDGE_CONFIG.port,'127.0.0.1');
         if(typeof ui!=='undefined')ui.registerMenuItem('Agent bridge: STOP',function(){armed=false;generation++;console.log('Agent bridge stopped');});
-        console.log('Agent bridge 0.1.1 listening on localhost:'+BRIDGE_CONFIG.port+' (read-only)');
+        console.log('Agent bridge '+BRIDGE_INFO.version+' listening on localhost:'+BRIDGE_CONFIG.port+' (read-only)');
     }
-    registerPlugin({name:'Agent Bridge',version:'0.1.1',authors:['Local agent bridge'],type:'intransient',licence:'GPL-3.0-only',minApiVersion:122,targetApiVersion:122,main:main});
+    registerPlugin({name:'Agent Bridge',version:BRIDGE_INFO.version,authors:['Local agent bridge'],type:'intransient',licence:'GPL-3.0-only',minApiVersion:BRIDGE_INFO.api,targetApiVersion:BRIDGE_INFO.api,main:main});
 })();

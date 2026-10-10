@@ -1,5 +1,11 @@
 # Share-package checks
 
+## OpenRCT2 0.5.6 update — 2026-10-10
+
+Bridge 0.1.2 builds against the pinned OpenRCT2 0.5.6 commit and passes all 166 automated tests, including local TCP tests. Native gameplay, all 18 added palette IDs, save/reload and read-only session revocation were checked; see VERIFICATION.md for scope and limitations. PowerShell scripts parse and an independent source review found no runtime defects. The package allowlist includes the compatibility manifest, colour generator, colour catalog and regression tests. Configuration, built authenticated plugins, runtime files, saves, screenshots and receipts remain excluded.
+
+## Previous package checks
+
 Prepared 2026-09-19.
 
 - Clean copy built using a local clone of the pinned upstream commit. Build produced 39 action schemas and 353 named track identifiers.

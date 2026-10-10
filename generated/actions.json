@@ -198,7 +198,9 @@
     "x2": "number",
     "y2": "number",
     "surfaceStyle": "number",
-    "edgeStyle": "number"
+    "edgeStyle": "number",
+    "surfaceColour1": "number",
+    "edgeColour1": "number"
   },
   "watersetheight": {
     "x": "number",

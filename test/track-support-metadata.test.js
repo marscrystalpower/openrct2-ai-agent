@@ -178,11 +178,10 @@ test('ordinary flat-group UI pieces have exhaustive audited requirements', () =>
     }
 });
 
-test('short versus long slope UI substitution preserves native groups for comparison', () => {
-    assert.deepEqual(segment('flatToUp60').excludedGroups, [group('slopeSteepLong')]);
+test('0.5.6 exposes short and long steep bases together while preserving native groups', () => {
+    for (const name of ['flatToUp60', 'up60ToFlat', 'flatToDown60', 'down60ToFlat', 'diagFlatToUp60', 'diagUp60ToFlat', 'diagFlatToDown60', 'diagDown60ToFlat']) assert.deepEqual(segment(name).excludedGroups, []);
     assert.deepEqual(segment('flatToUp60').requiredAnyGroups, [group('slopeSteepUp'), group('diagSlopeSteepUp')]);
     assert.deepEqual(segment('diagFlatToUp60').requiredGroups, [group('diagSlopeSteepUp'), group('flatToSteepSlope')]);
-    assert.deepEqual(segment('diagFlatToUp60').excludedGroups, [group('diagSlopeSteepLong')]);
     assert.equal(segment('diagFlatToUp60LongBase').trackGroup, group('slopeSteepLong'));
     assert.deepEqual(segment('diagFlatToUp60LongBase').requiredGroups, [group('diagSlopeSteepLong')]);
 });

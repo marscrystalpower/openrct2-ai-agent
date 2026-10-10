@@ -4,7 +4,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const cp = require('node:child_process');
-const SOURCE_COMMIT = '8694e3483690323b6a75fa7264b6c58116f51f31';
+const SOURCE_COMMIT = require('./compatibility.json').sourceCommit;
 const EXPECTED = { rides: 103, groups: 90, segments: 350, spriteGroups: 40 };
 
 function check(condition, message) {
@@ -265,7 +265,7 @@ function generateTrackSupport(sourceRoot) {
     // src/openrct2/ride/RideConstruction.cpp: kNextSelectedPiece
     // src/openrct2-ui/windows/RideConstruction.cpp: 381-455 (slopes/banking),
     // 650-668 (vertical/diagonal), 780-848 (banked transitions), 1749-1757
-    // (curve buttons), and 4833-4879 (short-to-long substitution).
+    // (curve buttons), and 4895 onward (short/long steep-base selection).
     read(base + 'RideConstruction.cpp');
     const rules = new Map();
     function requireGroups(names, groups, excluded = [], any = []) {
@@ -301,10 +301,12 @@ function generateTrackSupport(sourceRoot) {
     requireGroups('leftBankToUp25 rightBankToUp25 up25ToLeftBank up25ToRightBank leftBankToDown25 rightBankToDown25 down25ToLeftBank down25ToRightBank', ['flatRollBanking', 'slope']);
     requireGroups('bankedLeftQuarterTurn5Tiles bankedRightQuarterTurn5Tiles', ['flatRollBanking', 'curve']);
     requireGroups('leftBankedQuarterTurn3Tiles rightBankedQuarterTurn3Tiles', ['flatRollBanking', 'curveSmall']);
-    requireGroups('flatToUp60 up60ToFlat', ['flatToSteepSlope'], ['slopeSteepLong'], ['slopeSteepUp', 'diagSlopeSteepUp']);
-    requireGroups('flatToDown60 down60ToFlat', ['flatToSteepSlope'], ['slopeSteepLong'], ['slopeSteepDown', 'diagSlopeSteepDown']);
-    requireGroups('diagFlatToUp60 diagUp60ToFlat', ['diagSlopeSteepUp', 'flatToSteepSlope'], ['diagSlopeSteepLong']);
-    requireGroups('diagFlatToDown60 diagDown60ToFlat', ['diagSlopeSteepDown', 'flatToSteepSlope'], ['diagSlopeSteepLong']);
+    // v0.5.6 exposes short and long steep bases together when both groups are
+    // enabled. A long-base capability no longer excludes the short variant.
+    requireGroups('flatToUp60 up60ToFlat', ['flatToSteepSlope'], [], ['slopeSteepUp', 'diagSlopeSteepUp']);
+    requireGroups('flatToDown60 down60ToFlat', ['flatToSteepSlope'], [], ['slopeSteepDown', 'diagSlopeSteepDown']);
+    requireGroups('diagFlatToUp60 diagUp60ToFlat', ['diagSlopeSteepUp', 'flatToSteepSlope']);
+    requireGroups('diagFlatToDown60 diagDown60ToFlat', ['diagSlopeSteepDown', 'flatToSteepSlope']);
     // The four diagonal long-base TEDs say slopeSteepLong, but their UI selector
     // is explicitly diagSlopeSteepLong. Preserve raw trackGroup for API checks.
     requireGroups('diagFlatToUp60LongBase diagUp60ToFlatLongBase diagFlatToDown60LongBase diagDown60ToFlatLongBase', ['diagSlopeSteepLong']);

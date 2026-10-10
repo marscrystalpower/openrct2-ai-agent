@@ -15,7 +15,7 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 ## Operate and verify
 
 - Follow README.md's protocol, units and custom-track workflow. Inspect generated/actions.json for exact fields; do not guess.
-- Start with hello, park, rides and object inspection. Check API 122 and read-only startup. Arm only within authorized gameplay; changing parks revokes arming.
+- Start with hello, park, rides and object inspection. Check API 124 and read-only startup. Arm only within authorized gameplay; changing parks revokes arming.
 - Save a unique checkpoint before major changes. Do not overwrite the original save or reload without authorization.
 - Use request files. The client journals intent before dispatch. Never repeat a mutation after a disconnect/timeout, including under a new ID. Inspect its receipt AND live park state; a missing receipt after a crash does not prove nothing happened.
 - Batches can partially finish and do not roll back. Reconcile before further construction. Do not silently demolish partial work.

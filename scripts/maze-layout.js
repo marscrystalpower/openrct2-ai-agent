@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Native maze bitmap and gate rules: OpenRCT2 contributors, GPL-3.0-only.
-// Pinned engine: 8694e3483690323b6a75fa7264b6c58116f51f31.
+// Pinned engine: 82b309798a83346b7f9fc61a53847f4323deb19d.
 // Sources: src/openrct2/actions/ride/MazeSetTrackAction.cpp and
 // src/openrct2/world/Entrance.cpp (MazeEntranceHedgeRemoval), OpenRCT2/OpenRCT2.
 // This reads topology only. It neither sends game actions nor models guest AI.

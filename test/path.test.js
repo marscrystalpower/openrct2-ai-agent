@@ -12,7 +12,7 @@ function harness(options={}){
     let connection,serial=0;const sent=[],calls=[],queries=[],timers=[],store={},objects=options.objects||pathObjects();
     const objectManager={getObject:options.getObject||((type,index)=>(objects[type]||[]).find(o=>o.index===index)||null),getAllObjects:type=>objects[type]||[]};
     const listener={on:(e,fn)=>{connection=fn;return listener;},listen:()=>listener};
-    const context={mode:'normal',apiVersion:122,sharedStorage:{get:k=>store[k],set:(k,v)=>{store[k]=JSON.parse(JSON.stringify(v));}},subscribe:()=>{},setTimeout:fn=>{timers.push(fn);},
+    const context={mode:'normal',apiVersion:124,sharedStorage:{get:k=>store[k],set:(k,v)=>{store[k]=JSON.parse(JSON.stringify(v));}},subscribe:()=>{},setTimeout:fn=>{timers.push(fn);},
         queryAction:(action,args,cb)=>{queries.push({action,args:JSON.parse(JSON.stringify(args))});if(options.onQuery)options.onQuery(objects);cb(options.rejectQuery?{error:1,errorMessage:'Clearance rejected'}:{cost:10});},
         executeAction:(action,args,cb)=>{calls.push({action,args:JSON.parse(JSON.stringify(args))});cb({cost:10});}};
     vm.runInNewContext(bundle,{context,objectManager,network:{mode:'none',createListener:()=>listener},map:{size:{x:128,y:128},rides:[],getTile:()=>({elements:options.elements||[]})},park:{cash:10000},scenario:{},date:{},console:{log:()=>{}},registerPlugin:m=>m.main()});

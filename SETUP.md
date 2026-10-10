@@ -5,9 +5,9 @@ This is an agent-operated setup guide. Members give the repository link to their
 1. Explain OpenRCT2 as described in README.md and AGENTS.md. Check installation and launch authorization separately against the current conversation.
 2. Check Windows x64, node --version (20+), and git --version. If missing, arrange installation from nodejs.org or git-scm.com within the user's authorization. Reopen the shell to refresh PATH if needed. No npm install is required.
 3. Find the user's RCT2 folder. Inspect their Steam libraries (including custom drives) or ask for the installation location if it cannot be found. Verify Data/g1.dat. Do not download proprietary game assets. RCT1 assets are not required.
-4. Run scripts/Setup-Bridge.ps1 from a writable extracted repository. It obtains OpenRCT2 source at v0.5.5, verifies commit 8694e3483690323b6a75fa7264b6c58116f51f31, builds, runs automated tests and installs the official portable runtime with a checksum check. Each installation gets its own random token. Never copy a token from someone else.
+4. Run scripts/Setup-Bridge.ps1 from a writable extracted repository. It obtains OpenRCT2 source at v0.5.6, verifies commit 82b309798a83346b7f9fc61a53847f4323deb19d, builds, runs automated tests and installs the official portable runtime with a checksum check. Each installation gets its own random token. Never copy a token from someone else.
 5. When launch is authorized, run scripts/Start-Bridge.ps1 -Rct2Path ACTUAL_FOLDER. Optionally supply -Park with a full path to a user-selected scenario or copy of a save. The launcher creates an isolated user-data profile with en-GB language. Opening the original game from Steam does not load this bridge.
-6. Run node cli.js hello, then node cli.js park after opening a scenario. Confirm API 122, read-only mode and the expected park. Ask the user what to build/manage before arming. Save and inspect a unique checkpoint before substantial work.
+6. Run node cli.js hello, then node cli.js park after opening a scenario. Confirm API 124, read-only mode and the expected park. Ask the user what to build/manage before arming. Save and inspect a unique checkpoint before substantial work.
 
 ## Common issues
 

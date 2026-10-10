@@ -1,0 +1,529 @@
+{
+  "openrct2": "0.5.6",
+  "api": 124,
+  "sourceCommit": "82b309798a83346b7f9fc61a53847f4323deb19d",
+  "normalCount": 72,
+  "totalCount": 74,
+  "minId": 0,
+  "maxId": 73,
+  "colours": [
+    {
+      "id": 0,
+      "name": "black",
+      "objectName": "black",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 1,
+      "name": "grey",
+      "objectName": "grey",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 2,
+      "name": "white",
+      "objectName": "white",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 3,
+      "name": "darkPurple",
+      "objectName": "dark_purple",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 4,
+      "name": "lightPurple",
+      "objectName": "light_purple",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 5,
+      "name": "brightPurple",
+      "objectName": "bright_purple",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 6,
+      "name": "darkBlue",
+      "objectName": "dark_blue",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 7,
+      "name": "lightBlue",
+      "objectName": "light_blue",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 8,
+      "name": "icyBlue",
+      "objectName": "icy_blue",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 9,
+      "name": "darkWater",
+      "objectName": "teal",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 10,
+      "name": "lightWater",
+      "objectName": "aquamarine",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 11,
+      "name": "saturatedGreen",
+      "objectName": "saturated_green",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 12,
+      "name": "darkGreen",
+      "objectName": "dark_green",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 13,
+      "name": "mossGreen",
+      "objectName": "moss_green",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 14,
+      "name": "brightGreen",
+      "objectName": "bright_green",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 15,
+      "name": "oliveGreen",
+      "objectName": "olive_green",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 16,
+      "name": "darkOliveGreen",
+      "objectName": "dark_olive_green",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 17,
+      "name": "brightYellow",
+      "objectName": "bright_yellow",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 18,
+      "name": "yellow",
+      "objectName": "yellow",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 19,
+      "name": "darkYellow",
+      "objectName": "dark_yellow",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 20,
+      "name": "lightOrange",
+      "objectName": "light_orange",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 21,
+      "name": "darkOrange",
+      "objectName": "dark_orange",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 22,
+      "name": "lightBrown",
+      "objectName": "light_brown",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 23,
+      "name": "saturatedBrown",
+      "objectName": "saturated_brown",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 24,
+      "name": "darkBrown",
+      "objectName": "dark_brown",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 25,
+      "name": "salmonPink",
+      "objectName": "salmon_pink",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 26,
+      "name": "bordeauxRed",
+      "objectName": "bordeaux_red",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 27,
+      "name": "saturatedRed",
+      "objectName": "saturated_red",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 28,
+      "name": "brightRed",
+      "objectName": "bright_red",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 29,
+      "name": "darkPink",
+      "objectName": "dark_pink",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 30,
+      "name": "brightPink",
+      "objectName": "bright_pink",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 31,
+      "name": "lightPink",
+      "objectName": "light_pink",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 32,
+      "name": "armyGreen",
+      "objectName": "dark_olive_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 33,
+      "name": "honeyDew",
+      "objectName": "dark_olive_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 34,
+      "name": "tan",
+      "objectName": "saturated_brown_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 35,
+      "name": "maroon",
+      "objectName": "bordeaux_red_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 36,
+      "name": "coralPink",
+      "objectName": "bordeaux_red_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 37,
+      "name": "forestGreen",
+      "objectName": "grass_green_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 38,
+      "name": "chartreuse",
+      "objectName": "grass_green_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 39,
+      "name": "hunterGreen",
+      "objectName": "olive_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 40,
+      "name": "celadon",
+      "objectName": "olive_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 41,
+      "name": "limeGreen",
+      "objectName": "saturated_green_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 42,
+      "name": "sepia",
+      "objectName": "tan_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 43,
+      "name": "peach",
+      "objectName": "tan_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 44,
+      "name": "periwinkle",
+      "objectName": "dull_purple_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 45,
+      "name": "viridian",
+      "objectName": "dull_green_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 46,
+      "name": "seafoamGreen",
+      "objectName": "dull_green_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 47,
+      "name": "violet",
+      "objectName": "saturated_purple_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 48,
+      "name": "lavender",
+      "objectName": "saturated_purple_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 49,
+      "name": "pastelOrange",
+      "objectName": "orange_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 50,
+      "name": "deepWater",
+      "objectName": "aqua_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 51,
+      "name": "pastelPink",
+      "objectName": "magenta_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 52,
+      "name": "umber",
+      "objectName": "dull_brown_dark",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 53,
+      "name": "beige",
+      "objectName": "dull_brown_light",
+      "special": false,
+      "addedIn": null
+    },
+    {
+      "id": 54,
+      "name": "invisible",
+      "objectName": "invisible",
+      "special": true,
+      "addedIn": null
+    },
+    {
+      "id": 55,
+      "name": "voidBackground",
+      "objectName": "void",
+      "special": true,
+      "addedIn": null
+    },
+    {
+      "id": 56,
+      "name": "gold",
+      "objectName": "gold",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 57,
+      "name": "amber",
+      "objectName": "amber",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 58,
+      "name": "amethyst",
+      "objectName": "amethyst",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 59,
+      "name": "asparagus",
+      "objectName": "asparagus",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 60,
+      "name": "brown",
+      "objectName": "brown",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 61,
+      "name": "burntPink",
+      "objectName": "burnt_pink",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 62,
+      "name": "cactus",
+      "objectName": "cactus",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 63,
+      "name": "caramel",
+      "objectName": "caramel",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 64,
+      "name": "copper",
+      "objectName": "copper",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 65,
+      "name": "crimson",
+      "objectName": "crimson",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 66,
+      "name": "darkerWater",
+      "objectName": "darker_water",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 67,
+      "name": "emerald",
+      "objectName": "emerald",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 68,
+      "name": "indigo",
+      "objectName": "indigo",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 69,
+      "name": "pesto",
+      "objectName": "pesto",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 70,
+      "name": "pineGreen",
+      "objectName": "pine_green",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 71,
+      "name": "ruby",
+      "objectName": "ruby",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 72,
+      "name": "deepBlue",
+      "objectName": "deep_blue",
+      "special": false,
+      "addedIn": "0.5.6"
+    },
+    {
+      "id": 73,
+      "name": "silver",
+      "objectName": "silver",
+      "special": false,
+      "addedIn": "0.5.6"
+    }
+  ]
+}

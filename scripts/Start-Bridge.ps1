@@ -6,6 +6,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $bridgeRoot = Split-Path $PSScriptRoot -Parent
+$compatibility = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'compatibility.json') -Raw | ConvertFrom-Json
 $connection = [System.Net.Sockets.TcpClient]::new()
 try {
     $bridgeConfig = Get-Content -LiteralPath (Join-Path $bridgeRoot 'bridge.config.json') -Raw | ConvertFrom-Json
@@ -13,7 +14,7 @@ try {
     try { $null = $connect.Wait(500) } catch { }
     if ($connection.Connected) { throw 'The agent-ready game is already running. Switch to its OpenRCT2 window.' }
 } finally { $connection.Dispose() }
-$exe = Get-ChildItem -LiteralPath (Join-Path $bridgeRoot 'runtime\v0.5.5') -Recurse -File -Filter 'openrct2.exe' | Select-Object -First 1
+$exe = Get-ChildItem -LiteralPath (Join-Path $bridgeRoot ('runtime\v' + $compatibility.openrct2)) -Recurse -File -Filter 'openrct2.exe' | Select-Object -First 1
 if (-not $exe) { throw 'Run scripts/Install-Bridge.ps1 first' }
 if (-not (Test-Path -LiteralPath (Join-Path $Rct2Path 'Data\g1.dat'))) { throw 'RCT2 assets not found; provide -Rct2Path' }
 if ($Headless -and -not $Park) { throw 'Headless mode requires a park/scenario file' }

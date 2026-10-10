@@ -9,7 +9,7 @@ function harness(options={}){
     const research=Object.hasOwn(options,'research')?options.research:{isObjectResearched:()=>true};
     const objectManager={getObject:(type,index)=>objects.find(o=>o.index===index),getAllObjects:()=>objects};
     const listener={on:(event,fn)=>{connection=fn;return listener;},listen:(port,host)=>{assert.equal(host,'127.0.0.1');return listener;}};
-    const context={mode:'normal',apiVersion:122,paused:false,gameSpeed:0,
+    const context={mode:'normal',apiVersion:124,paused:false,gameSpeed:0,
         sharedStorage:{get:k=>store[k],set:(k,v)=>{store[k]=JSON.parse(JSON.stringify(v));}},subscribe:(name,fn)=>{hooks[name]=fn;},
         getTrackSegment:id=>fixtures[id]&&({...fixtures[id],trackGroup:supportData.segments[id].trackGroup,isSteepUp:supportData.segments[id].flags.isSteepUp}),getAllTrackSegments:()=>Object.values(fixtures),setTimeout:fn=>{timers.push(fn);},
         saveGame:opts=>{if(options.failSave)throw Error('disk unavailable');saved.push(opts);},
@@ -154,7 +154,7 @@ test('creation rejects automatic, wrapped, absent and incompatible object/type i
 test('missing, throwing and non-boolean research APIs fail closed with a useful error',()=>{
     for(const research of [undefined,null,{},researchStatus(undefined),researchStatus(1),{isObjectResearched:()=>{throw Error('unavailable');}}]){
         const h=harness({research}),reply=h.request('action.query',create).reply;
-        assert.equal(reply.ok,false);assert.match(reply.error,/Cannot verify ride research status/);assert.match(reply.error,/API 122/);
+        assert.equal(reply.ok,false);assert.match(reply.error,/Cannot verify ride research status/);assert.match(reply.error,/API 124/);
         assert.equal(h.queries.length,0);assert.equal(h.calls.length,0);
     }
 });
