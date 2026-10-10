@@ -16,6 +16,8 @@ Run scripts/Setup-Bridge.ps1. It verifies the exact upstream source commit befor
 
 - Follow README.md's protocol, units and custom-track workflow. Inspect generated/actions.json for exact fields; do not guess.
 - Start with hello, park, rides and object inspection. Check API 124 and read-only startup. Arm only within authorized gameplay; changing parks revokes arming.
+- Run `node cli.js verify` before arming. Compare the live bridge manifest/source hash and research capability with the expected public source manifest; do not equate an OpenRCT2 source commit or a shared version number with the bridge revision. If outdated, rebuild/install matching public source while preserving private configuration and saves, then verify the running plugin again.
+- Report amounts using native `moneyDisplay`, `costDisplay` and receipt display strings. Read the explicitly selected profile's currency code when available; never assume GBP or infer currency from language. Preserve raw money units for commands and budgets. A display of `null` is an unsupported format range or missing formatter, not permission to invent a symbol or conversion.
 - Save a unique checkpoint before major changes. Do not overwrite the original save or reload without authorization.
 - Use request files. The client journals intent before dispatch. Never repeat a mutation after a disconnect/timeout, including under a new ID. Inspect its receipt AND live park state; a missing receipt after a crash does not prove nothing happened.
 - Batches can partially finish and do not roll back. Reconcile before further construction. Do not silently demolish partial work.

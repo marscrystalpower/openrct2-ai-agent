@@ -37,7 +37,7 @@ test('terrain colour schema supplements both required native visitor parameters'
 
 test('hello reports the source pin and colour catalog stays read-only',()=>{
     const h=harness(),hello=h.result(h.request('hello')).result;
-    assert.equal(hello.bridgeVersion,'0.1.2');assert.equal(hello.targetApiVersion,compatibility.api);assert.equal(hello.openrct2,compatibility.openrct2);assert.equal(hello.sourceCommit,compatibility.sourceCommit);assert.equal(hello.compatible,true);assert.equal(hello.armed,false);
+    assert.equal(hello.bridgeVersion,require('../package.json').version);assert.equal(hello.targetApiVersion,compatibility.api);assert.equal(hello.openrct2,compatibility.openrct2);assert.equal(hello.sourceCommit,compatibility.sourceCommit);assert.equal(hello.compatible,true);assert.equal(hello.armed,false);
     assert.deepEqual(h.result(h.request('colours')).result,palette);assert.equal(h.calls.length,0);
 });
 

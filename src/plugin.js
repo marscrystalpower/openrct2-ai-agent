@@ -2,7 +2,7 @@
 (function () {
     'use strict';
     function main() {
-        var C=BridgeCore, trackGuard=BridgeTrackGuard.create(BridgeCore,TRACK_SUPPORT,context,objectManager), armed=false, busy=false, generation=0, plans=Object.create(null), clients=[];
+        var C=BridgeCore, money=BridgeMoney.create(context), trackGuard=BridgeTrackGuard.create(BridgeCore,TRACK_SUPPORT,context,objectManager), armed=false, busy=false, generation=0, plans=Object.create(null), clients=[];
         var session=newSession();
         var storageKey='agent-bridge.receipts.v1';
         var receipts=context.sharedStorage.get(storageKey) || {};
@@ -156,7 +156,7 @@
         function inspect(req){
             var a=req.args||{};
             switch(req.op){
-            case 'hello':return {bridgeVersion:BRIDGE_INFO.version,openrct2:BRIDGE_INFO.openrct2,sourceCommit:BRIDGE_INFO.sourceCommit,targetApiVersion:BRIDGE_INFO.api,apiVersion:context.apiVersion,compatible:context.apiVersion===BRIDGE_INFO.api,session:session,armed:armed,busy:busy,mode:context.mode,network:network.mode,operations:['hello','arm','stop','receipt','park','rides','ride','map','guests','staff','objects','actions','colours','capture','save','track.catalog','track.plan','track.walk','action.query','action.execute','batch.execute','track.build','coaster.build']};
+            case 'hello':return {bridgeVersion:BRIDGE_INFO.version,bridgeSourceHash:BRIDGE_INFO.bridgeManifest.sourceHash,bridgeManifest:BRIDGE_INFO.bridgeManifest,openrct2:BRIDGE_INFO.openrct2,engineSourceCommit:BRIDGE_INFO.sourceCommit,sourceCommit:BRIDGE_INFO.sourceCommit,targetApiVersion:BRIDGE_INFO.api,apiVersion:context.apiVersion,compatible:context.apiVersion===BRIDGE_INFO.api,currency:money.info(),session:session,armed:armed,busy:busy,mode:context.mode,network:network.mode,operations:['hello','arm','stop','receipt','park','rides','ride','map','guests','staff','objects','actions','colours','capture','save','track.catalog','track.plan','track.walk','action.query','action.execute','batch.execute','track.build','coaster.build']};
             case 'actions':return ACTION_SCHEMAS;
             case 'colours':return COLOUR_PALETTE;
             case 'receipt':if(typeof a.id!=='string')error('receipt id required');return Object.prototype.hasOwnProperty.call(receipts,a.id)?receipts[a.id]:null;
@@ -320,6 +320,8 @@
         }
         var mutations=['action.execute','batch.execute','track.build','coaster.build','save'];
         function dispatch(req,send){
+            var rawSend=send;
+            send=function(reply){if(reply.ok)reply.result=money.enrich(req.op,reply.result);rawSend(reply);};
             try{
                 if(!req || req.token!==BRIDGE_CONFIG.token)error('Authentication failed');
                 if(typeof req.id!=='string'||!/^[-a-zA-Z0-9]{8,80}$/.test(req.id))error('id must be 8..80 letters/digits/hyphens');
