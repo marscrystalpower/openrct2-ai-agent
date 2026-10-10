@@ -1,5 +1,9 @@
 # Share-package checks
 
+## Currency and source identity — 2026-10-10
+
+Bridge 0.1.3 passes 195 automated tests and native USD display/installation checks. The package includes native money formatting, profile settings parsing, token-free source identity, source/edit preflight tests and the public bridge manifest. Source and installed bundle checks retain private authentication, profile paths, saves and journals locally. See VERIFICATION.md for native scope.
+
 ## OpenRCT2 0.5.6 update — 2026-10-10
 
 Bridge 0.1.2 builds against the pinned OpenRCT2 0.5.6 commit and passes all 166 automated tests, including local TCP tests. Native gameplay, all 18 added palette IDs, save/reload and read-only session revocation were checked; see VERIFICATION.md for scope and limitations. PowerShell scripts parse and an independent source review found no runtime defects. The package allowlist includes the compatibility manifest, colour generator, colour catalog and regression tests. Configuration, built authenticated plugins, runtime files, saves, screenshots and receipts remain excluded.

@@ -1,5 +1,13 @@
 # Verification and release status
 
+## Currency and installed-source identity — 2026-10-10
+
+Bridge 0.1.3 adds native monetary display companions without changing raw amounts or command budgets. It uses the running game's scalar `context.formatString('{CURRENCY2DP}', value)` call, respecting selected currency, conversion rate, symbol placement and language. Values outside the API's signed-32-bit format range retain their raw value and return display `null`. Currency codes come only from an explicitly selected profile configuration, never from a dollar sign or language.
+
+The installed plugin, canonical control client and GitHub source are compared with a deterministic, token-free manifest of sixteen public runtime/client/build inputs, normalized for line endings. Live `hello` reports this bridge identity separately from the OpenRCT2 source commit and includes the research-bitmap capability. The client verifies actual local inputs and blocks arming/writes for an old same-version plugin, missing capabilities, unbuilt source edits or an API mismatch. The installer verifies current source identity and preserves existing display settings; newly created profiles inherit validated preferences.
+
+All 195 automated tests pass, with none skipped. Independent review found and resolved stale-manifest and profile-path edge cases. Native Windows x64 verification confirmed the USD profile and displayed cash `$42,640.20`, ride price `$13.60` and native quoted cost `$0.00`. Live identity and control-client identity matched, research fields were available on all 25 loaded ride objects, and automatic ride-object selection was rejected. No gameplay values or game currency settings were changed; the loaded checkpoint remained paused and read-only. Unresearched-object query/execution/race cases remain covered by the automated mocked-engine tests; the live scenario's loaded ride objects were all researched.
+
 ## OpenRCT2 0.5.6 qualification — 2026-10-10
 
 Bridge 0.1.2 targets Windows x64, OpenRCT2 0.5.6 and scripting API 124, pinned to upstream commit `82b309798a83346b7f9fc61a53847f4323deb19d`.

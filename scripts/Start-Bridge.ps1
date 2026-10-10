@@ -20,7 +20,9 @@ if (-not (Test-Path -LiteralPath (Join-Path $Rct2Path 'Data\g1.dat'))) { throw '
 if ($Headless -and -not $Park) { throw 'Headless mode requires a park/scenario file' }
 $arguments = @()
 if ($Park) { $resolvedPark = (Resolve-Path -LiteralPath $Park).Path; $arguments += ('"' + $resolvedPark + '"') }
-$profileRoot = Join-Path $bridgeRoot 'user-data'
+$profileRootJson = & node -e 'const p=require("path"),root=process.argv[1],c=require(p.join(root,"bridge.config.json"));process.stdout.write(JSON.stringify(require(p.join(root,"cli.js")).profileRoot(c,root)));' $bridgeRoot
+if ($LASTEXITCODE -ne 0) { throw 'Invalid selected OpenRCT2 profile path' }
+$profileRoot = $profileRootJson | ConvertFrom-Json
 $arguments += @('--user-data-path', ('"' + $profileRoot + '"'), '--rct2-data-path', ('"' + $Rct2Path + '"'))
 if ($Headless) { $arguments += '--headless' }
 $logRoot = Join-Path $bridgeRoot 'logs'

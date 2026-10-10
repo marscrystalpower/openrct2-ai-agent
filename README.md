@@ -44,6 +44,7 @@ Setup obtains pinned upstream source, builds a fresh local token-bearing plugin,
 
 ```powershell
 node cli.js hello
+node cli.js verify
 node cli.js park
 node cli.js rides
 node cli.js objects '{"type":"ride"}'
@@ -57,6 +58,10 @@ node cli.js stop
 
 Read-only inspections work without arming. `arm` is explicit and tied to the current park; it grants no authority beyond the user's gameplay instructions. Save checkpoints are named `agent-checkpoint-REQUEST-ID.park` in user-data/save. Screenshots use `capture` and appear in user-data/screenshot.
 
+`hello` reports a token-free `bridgeSourceHash`, a bridge manifest and versioned capabilities, including `native-research-bitmap-v1`. This identifies the actual public bridge code; `engineSourceCommit` (and the older `sourceCommit` alias) identifies OpenRCT2 instead. The CLI compares the live identity with `generated/bridge-manifest.json`. `verify` exits nonzero for a mismatch, and the client refuses to arm or send mutations until identities match. A version number alone is insufficient because earlier builds shared the same number.
+
+For an existing game profile, the local, private `bridge.config.json` may include an absolute `profilePath` pointing to its OpenRCT2 user-data directory. The CLI then reads that profile's display settings and verifies artifacts there. The default is this installation's isolated `user-data` folder. This avoids editing the public client code for a particular computer.
+
 For anything complex, place this shape in a JSON file and use `node cli.js request FILE`:
 
 ```json
@@ -69,7 +74,9 @@ Use `action.execute` with the same action/args plus `maxCost` to execute; `batch
 
 The bridge checks `park.research.isObjectResearched("ride", index)` in the pinned API rather than trusting the loaded catalog, invented/uninvented lists, or a successful engine query. Direct `ridecreate`, batches, and `coaster.build` use the same guard. It also covers new track, maze build cells, entrances/exits, and vehicle changes on existing rides, including `track.build`. Cheat-only ride-type changes are blocked separately. Research-bypass cheats do not override this restriction. Missing or unreadable research status blocks these construction actions; use the pinned OpenRCT2 v0.5.6 / API 124. Closing, ordinary ride management, demolition, track/gate removal, and maze move/fill remain available for existing rides. Native legality, cost, and operating checks still apply.
 
-**Units:** map inspection uses tile coordinates. Construction uses world x/y (32 per tile), world z (8 per base-height unit, 16 per land increment), and cardinal direction 0=(-x), 1=(+y), 2=(+x), 3=(-y). Directions 4..7 represent diagonal connections for the planner. Money is the engine's integer unit: 10 units = one pound/dollar in the default display. E.g. maxCost 100000 is £/$10,000. Ratings are fixed-point integers: 652 means 6.52. Consult engine schema/source for action-specific enums.
+**Units:** map inspection uses tile coordinates. Construction uses world x/y (32 per tile), world z (8 per base-height unit, 16 per land increment), and cardinal direction 0=(-x), 1=(+y), 2=(+x), 3=(-y). Directions 4..7 represent diagonal connections for the planner. Raw money and `maxCost` remain engine integer units. Display conversion varies by the selected currency; for USD, 100000 raw units displays as $10,000.00. Ratings are fixed-point integers: 652 means 6.52. Consult engine schema/source for action-specific enums.
+
+**Currency:** `hello` and `park` include currency metadata; `park.moneyDisplay`, ride `moneyDisplay`, query `costDisplay` and receipt display fields use the running game's native formatter. Use those strings in reports, following the actual selected currency, custom conversion rate, symbol placement and language. Never assume GBP from the repository, language, examples or raw money. The plugin cannot read a currency code reliably; the CLI reports `currency.configuredCode` and `profileSettings` from the explicitly selected profile, without guessing a code from `$`. Native display strings remain authoritative if settings are missing or have changed. API 124 narrows formatting arguments to signed 32-bit integers, so larger valid raw amounts are preserved with display `null`, rather than being wrapped or mislabeled.
 
 ## Build paths with matching object families
 

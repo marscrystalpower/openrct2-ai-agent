@@ -7,13 +7,13 @@ if (-not $OutputDirectory) { $OutputDirectory = Join-Path $bridgeRoot 'release-o
 $files = @(
     '.gitignore', 'README.md', 'AGENTS.md', 'SETUP.md', 'START-HERE.md',
     'VERIFICATION.md', 'RELEASE-CHECKS.md', 'SKOOL-POST.md', 'LICENSE', 'package.json', 'cli.js',
-    'src/core.js', 'src/plugin.js', 'src/track-guard.js',
+    'src/core.js', 'src/plugin.js', 'src/track-guard.js', 'src/money.js',
     'scripts/build.js', 'scripts/compatibility.json', 'scripts/colour-palette.js', 'scripts/track-support.js', 'scripts/extract-fixtures.js', 'scripts/maze-layout.js', 'scripts/Install-Bridge.ps1',
-    'scripts/Start-Bridge.ps1', 'scripts/Setup-Bridge.ps1', 'scripts/Package-Source.ps1',
+    'scripts/Start-Bridge.ps1', 'scripts/Setup-Bridge.ps1', 'scripts/Package-Source.ps1', 'scripts/display-settings.js', 'scripts/source-manifest.js',
     'test/core.test.js', 'test/plugin.test.js', 'test/client.test.js', 'test/maze.test.js', 'test/path.test.js',
-    'test/track.test.js', 'test/track-support-metadata.test.js', 'test/colours.test.js', 'test/helpers/track-harness.js', 'test/fixtures/segments.json',
+    'test/track.test.js', 'test/track-support-metadata.test.js', 'test/colours.test.js', 'test/money.test.js', 'test/client-identity.test.js', 'test/display-settings.test.js', 'test/source-manifest.test.js', 'test/helpers/track-harness.js', 'test/fixtures/segments.json',
     'examples/custom-coaster-plan.json', 'examples/build-coaster.template.json',
-    'examples/park-management.template.json', 'examples/maze-layout.json', 'generated/actions.json', 'generated/colours.json', 'generated/track-names.json', 'generated/track-support.json'
+    'examples/park-management.template.json', 'examples/maze-layout.json', 'generated/actions.json', 'generated/colours.json', 'generated/track-names.json', 'generated/track-support.json', 'generated/bridge-manifest.json'
 )
 New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
 $archive = Join-Path $OutputDirectory ('openrct2-agent-bridge-source-' + [guid]::NewGuid().ToString() + '.zip')
