@@ -147,7 +147,7 @@ Mazes need operating guest-flow checks. Observe completed visits over elapsed ga
 - The bridge provides the construction tools and geometric validation; it does not prescribe a particular coaster shape.
 - The included example is intentionally not a canonical ride. It should be treated like an API usage example rather than a blueprint to imitate. There is no required sequence of station → lift → drop → turns → straightaway → brakes.
 - When designing a coaster, first decide what kind of ride you are trying to create, then translate that concept into track pieces. Different rides may reasonably have different station lengths, elevations, lift arrangements, curves, inversions, brake sections, on-ride photo sections, underground segments, block sections, train configurations, footprints and pacing.
-- Use track.plan to verify the proposed geometry and the normal testing workflow to evaluate the finished ride. Geometry validation establishes track connectivity and footprint information; it does not establish that the resulting ride has appropriate physics, forces, ratings, capacity or guest access.
+- Before track.plan, review banking against expected speed and turn radius, and runs of four or more ordinary flat straights for wasted space. Prefer unbanked slow turns and purposeful hills or other suitable elements. Keep functional station, lift, launch and braking runs. For multiple trains in block mode, plan legal block boundaries and braking into block brakes; ordinary brakes alone do not create blocks. Test forces, stopping, restart and block clearance with the intended train count. These are agent design checks; track.plan validates geometry, not physics, ratings, capacity or guest access.
 
 ## Recovery and limits
 
