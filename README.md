@@ -12,7 +12,7 @@ OpenRCT2 supports plugins. This bridge uses that plugin interface to let an agen
 
 Give your agent this repository and say: **Read AGENTS.md, explain the setup to me, and help me install this bridge.** The agent handles technical setup; you supply your RCT2 copy, any necessary approvals, and your choice of park.
 
-Windows x64, an installed copy of RCT2, Node.js 20 or newer, Git, and internet access are required. The agent should check and arrange missing prerequisites with your authorization. OpenRCT2 is pinned to v0.5.5 / scripting API 122. Other releases and operating systems have not been qualified for this package.
+Windows x64, an installed copy of RCT2, Node.js 20 or newer, Git, and internet access are required. The agent should check and arrange missing prerequisites with your authorization. OpenRCT2 is pinned to v0.5.6 / scripting API 124. Other releases and operating systems have not been qualified for this package.
 
 **Status:** community test release. The original bridge passed native construction, train testing, screenshot and save/reload checks. The shared package has a separate verification report in VERIFICATION.md. It is not guaranteed to design safe, profitable rides or finish scenarios.
 
@@ -67,7 +67,7 @@ Use `action.execute` with the same action/args plus `maxCost` to execute; `batch
 
 **Ride research:** `objects {"type":"ride"}` lists loaded objects, including ones that have not been researched. Each ride object now includes `researched`: `true`, `false`, or `null` if the native research status cannot be read. Select an explicit object `index` with `researched:true` and a supported, non-null `rideType`. Automatic object selection (`rideObject:65535` or `-1`) is rejected.
 
-The bridge checks `park.research.isObjectResearched("ride", index)` in the pinned API rather than trusting the loaded catalog, invented/uninvented lists, or a successful engine query. Direct `ridecreate`, batches, and `coaster.build` use the same guard. It also covers new track, maze build cells, entrances/exits, and vehicle changes on existing rides, including `track.build`. Cheat-only ride-type changes are blocked separately. Research-bypass cheats do not override this restriction. Missing or unreadable research status blocks these construction actions; use the pinned OpenRCT2 v0.5.5 / API 122. Closing, ordinary ride management, demolition, track/gate removal, and maze move/fill remain available for existing rides. Native legality, cost, and operating checks still apply.
+The bridge checks `park.research.isObjectResearched("ride", index)` in the pinned API rather than trusting the loaded catalog, invented/uninvented lists, or a successful engine query. Direct `ridecreate`, batches, and `coaster.build` use the same guard. It also covers new track, maze build cells, entrances/exits, and vehicle changes on existing rides, including `track.build`. Cheat-only ride-type changes are blocked separately. Research-bypass cheats do not override this restriction. Missing or unreadable research status blocks these construction actions; use the pinned OpenRCT2 v0.5.6 / API 124. Closing, ordinary ride management, demolition, track/gate removal, and maze move/fill remain available for existing rides. Native legality, cost, and operating checks still apply.
 
 **Units:** map inspection uses tile coordinates. Construction uses world x/y (32 per tile), world z (8 per base-height unit, 16 per land increment), and cardinal direction 0=(-x), 1=(+y), 2=(+x), 3=(-y). Directions 4..7 represent diagonal connections for the planner. Money is the engine's integer unit: 10 units = one pound/dollar in the default display. E.g. maxCost 100000 is £/$10,000. Ratings are fixed-point integers: 652 means 6.52. Consult engine schema/source for action-specific enums.
 
@@ -82,11 +82,17 @@ For `footpathplace`, use the pinned engine's `constructFlags` values:
 - `2`: regular legacy path. `object` must be a loaded `footpath` index.
 - `3`: legacy queue, using the queue appearance built into that same legacy `footpath` object.
 
-Legacy paths supply their own railings. Their required `railingsObject` argument is ignored by the native engine; use `65535` (the null sentinel), or an unsigned 16-bit value. Modern paths require a real loaded railings object, so the sentinel is rejected there. All path object families have indices `0..254` in API 122, and an in-range index must still be loaded.
+Legacy paths supply their own railings. Their required `railingsObject` argument is ignored by the native engine; use `65535` (the null sentinel), or an unsigned 16-bit value. Modern paths require a real loaded railings object, so the sentinel is rejected there. All path object families have indices `0..254` in API 124, and an in-range index must still be loaded.
 
 The bridge rejects unknown construction bits, wrapped/sentinel object indices, missing or wrong-family objects, and modern queue/surface mismatches before native query and again before execution. This applies to direct actions and each batch step, including replacement of an existing path. It does not silently change flags or select another family. The same numeric index can legitimately exist in several catalogs; `constructFlags` selects the namespace, so an overlap alone is not an error. Regular-surface-as-queue cheats do not bypass the queue check.
 
 The native action can accept invalid object references and create invisible, walkable paths. Its success is therefore insufficient verification. `map` read-back exposes `object` for legacy paths, or `surfaceObject` and `railingsObject` for modern paths, together with `isQueue`. After building, check those references, native visibility, queue connections, and actual guest access. These guards do not repair existing paths or prove the resulting guest network works.
+
+## Colours and terrain painting
+
+`colours` returns the source-verified 74-entry palette. The 18 colours added in 0.5.6 use IDs 56..73; invisible and void remain 54 and 55. Actual colour arguments accept IDs 0..73. Track placement `colour` is a scheme index 0..3. Use `ridesetappearance` to change track and vehicle colours, then inspect `ride` for `colourSchemes` and `vehicleColours`.
+
+`surfacesetstyle` requires both `surfaceColour1` and `edgeColour1` in addition to its previous six arguments. These fields are missing from the upstream scripting declarations, so the build verifies them against native action source. Scripting API 124 exposes terrain styles but does not expose terrain primary colours or recolouring flags. Use native visuals or save inspection to verify recolouring on a recolourable terrain object.
 
 ## Choose supported ride track
 
@@ -149,4 +155,4 @@ Mazes need operating guest-flow checks. Observe completed visits over elapsed ga
 
 ## Source and license
 
-GPL-3.0-only. API schemas, track identifiers, normal-construction metadata, and geometry test fixtures are derived from [OpenRCT2 v0.5.5](https://github.com/OpenRCT2/OpenRCT2/tree/v0.5.5), commit `8694e3483690323b6a75fa7264b6c58116f51f31`. Geometry follows `TrackDesign.cpp`, `TrackIteration.cpp`, `Location.hpp`, and the scripting TrackSegment bindings. Retain LICENSE and upstream notices when distributing source. Do not share bridge.config.json, the token-bearing plugin bundle, receipts, or private park saves.
+GPL-3.0-only. API schemas, track identifiers, normal-construction metadata, and geometry test fixtures are derived from [OpenRCT2 v0.5.6](https://github.com/OpenRCT2/OpenRCT2/tree/v0.5.6), commit `82b309798a83346b7f9fc61a53847f4323deb19d`. Geometry follows `TrackDesign.cpp`, `TrackIteration.cpp`, `Location.hpp`, and the scripting TrackSegment bindings. Retain LICENSE and upstream notices when distributing source. Do not share bridge.config.json, the token-bearing plugin bundle, receipts, or private park saves.

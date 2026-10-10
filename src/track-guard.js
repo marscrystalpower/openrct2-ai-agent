@@ -4,9 +4,9 @@ var BridgeTrackGuard = (function () {
     'use strict';
     function create(C, data, context, objectManager) {
         function fail(message) { throw new Error(message); }
-        function unavailable(detail) { fail('Cannot verify normal track support: '+detail+'. Use the pinned OpenRCT2 v0.5.5 / API 122 and inspect track.catalog for the ride before retrying'); }
+        function unavailable(detail) { fail('Cannot verify normal track support: '+detail+'. Use the pinned OpenRCT2 v0.5.6 / API 124 and inspect track.catalog for the ride before retrying'); }
         function descriptor(type) {
-            if (context.apiVersion !== 122) unavailable('API version is not 122');
+            if (context.apiVersion !== 124) unavailable('API version is not 124');
             C.integer(type,'rideType',0,data.rideTypes.length-1);
             var rtd=data.rideTypes[type];
             if (!rtd || rtd.flags.isDummyType) unavailable('unknown or dummy ride type '+type);

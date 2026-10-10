@@ -108,7 +108,7 @@ test('cheat-only ride-type changes are rejected while same-type researched vehic
     assert.equal(h.queries.length,1);
 });
 test('removal and normal management remain available even when support metadata is unavailable',()=>{
-    const h=harness({getTrackSegment:()=>null});h.context.apiVersion=999;
+    const h=harness({getTrackSegment:()=>null});
     const actions=[{action:'trackremove',args:{x:2048,y:2048,z:64,direction:0,trackType:0,sequence:0}},
         {action:'ridesetstatus',args:{ride:1,status:0}},{action:'ridesetsetting',args:{ride:1,setting:5,value:1}},
         {action:'tracksetbrakespeed',args:{x:2048,y:2048,z:64,trackType:names.brakes,brakeSpeed:8}}];
@@ -183,13 +183,16 @@ test('regular and inverted ride variants use separate normal group lists',()=>{
     assert.equal(query(h,forRide(type,'up25',3)).ok,true);
     assert.equal(query(h,forRide(type,'up25',1)).ok,false);
 });
-test('long-base transitions stay available and short substitutes are rejected where the UI replaces them',()=>{
+test('0.5.6 steep-base selection preserves ride capabilities and native lift limits',()=>{
     const type=id('looping_rc'),h=harness({type});
     assert.equal(query(h,forRide(type,'flatToUp60LongBase')).ok,true);
     assert.equal(query(h,forRide(type,'flatToUp60LongBase',1)).ok,false);
+    assert.equal(query(h,forRide(type,'flatToUp60')).ok,false); // No flatToSteepSlope capability.
     const hyper=id('hypercoaster'),l=harness({type:hyper});
     assert.equal(query(l,forRide(hyper,'diagFlatToUp60LongBase')).ok,true);
-    assert.equal(query(l,forRide(hyper,'diagFlatToUp60')).ok,false);
+    assert.equal(query(l,forRide(hyper,'diagFlatToUp60')).ok,false); // No short-base capability.
+    const dive=id('vertical_drop_rc'),both=harness({type:dive});
+    for(const name of ['flatToUp60','up60ToFlat','flatToDown60','down60ToFlat','diagFlatToUp60','diagUp60ToFlat','diagFlatToDown60','diagDown60ToFlat'])assert.equal(query(both,forRide(dive,name)).ok,true,name);
 });
 test('Alpine uphill segments require chain while slopes remain discoverable in the ride catalog',()=>{
     const type=id('alpine_rc'),h=harness({type});

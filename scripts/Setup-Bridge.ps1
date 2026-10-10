@@ -2,6 +2,7 @@
 param()
 $ErrorActionPreference = 'Stop'
 $bridgeRoot = Split-Path $PSScriptRoot -Parent
+$compatibility = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'compatibility.json') -Raw | ConvertFrom-Json
 Push-Location $bridgeRoot
 try {
     if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw 'Node.js 20+ is required; arrange installation with the user.' }
@@ -10,11 +11,11 @@ try {
     if ($LASTEXITCODE -ne 0 -or [int]$nodeVersion -lt 20) { throw 'Node.js 20+ is required.' }
     $upstream = Join-Path $bridgeRoot 'vendor/OpenRCT2'
     if (-not (Test-Path -LiteralPath $upstream)) {
-        & git clone --depth 1 --branch v0.5.5 https://github.com/OpenRCT2/OpenRCT2.git $upstream
+        & git clone --depth 1 --branch ('v' + $compatibility.openrct2) https://github.com/OpenRCT2/OpenRCT2.git $upstream
         if ($LASTEXITCODE -ne 0) { throw 'Upstream clone failed.' }
     }
     $revision = & git -C $upstream rev-parse HEAD
-    if ($LASTEXITCODE -ne 0 -or $revision -ne '8694e3483690323b6a75fa7264b6c58116f51f31') { throw 'Upstream source does not match the pinned commit. Preserve it and use a clean pinned checkout.' }
+    if ($LASTEXITCODE -ne 0 -or $revision -ne $compatibility.sourceCommit) { throw 'Upstream source does not match the pinned commit. Preserve it and use a clean pinned checkout.' }
     $changes = & git -C $upstream status --porcelain
     if ($LASTEXITCODE -ne 0 -or $changes) { throw 'Upstream checkout has changes; use a clean pinned checkout.' }
     & node scripts/build.js

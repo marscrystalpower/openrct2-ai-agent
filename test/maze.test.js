@@ -9,7 +9,7 @@ function harness(options={}){
  const mazeObject={index:0,rideType:[20]};
  const rides=options.rides??[{id:15,type:20,object:mazeObject,status:'closed'}];
  const listener={on:(e,fn)=>{connection=fn;return listener;},listen:()=>listener};
- const context={mode:'normal',apiVersion:122,paused:false,gameSpeed:1,
+ const context={mode:'normal',apiVersion:124,paused:false,gameSpeed:1,
   sharedStorage:{get:k=>store[k],set:(k,v)=>{store[k]=v;}},subscribe:(e,fn)=>{hooks[e]=fn;},
   getAllTrackSegments:()=>[],setTimeout:fn=>{timers.push(fn);},
   queryAction:(action,args,cb)=>{queries.push({action,args});cb(options.rejectQuery?{error:1,errorMessage:'Clearance rejected',cost:0}:{error:0,cost:100});},

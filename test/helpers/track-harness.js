@@ -13,12 +13,12 @@ function harness(options={}){
     const type=options.type??15,objects=options.objects??[nativeObject(type)],rides=options.rides??[{id:1,type,object:objects[0],status:'closed'}];
     const queries=[],calls=[],timers=[],sent=[],store=options.store||{},events={};let connect,serial=0;
     const listener={on:(e,f)=>{connect=f;return listener;},listen:()=>listener};
-    const context={mode:'normal',apiVersion:122,subscribe:()=>{},sharedStorage:{get:k=>store[k],set:(k,v)=>{store[k]=JSON.parse(JSON.stringify(v));}},setTimeout:fn=>timers.push(fn),
+    const context={mode:'normal',apiVersion:124,subscribe:()=>{},sharedStorage:{get:k=>store[k],set:(k,v)=>{store[k]=JSON.parse(JSON.stringify(v));}},setTimeout:fn=>timers.push(fn),
         getTrackSegment:options.getTrackSegment||nativeSegment,getAllTrackSegments:()=>data.segments.map(s=>nativeSegment(s.id)),
         queryAction:(action,args,cb)=>{queries.push({action,args:{...args}});if(options.onQuery)options.onQuery({objects,rides,context});cb(options.rejectQuery?{error:1,errorMessage:'Clearance rejected'}:{cost:10});},
         executeAction:(action,args,cb)=>{calls.push({action,args:{...args}});if(action==='ridecreate'){rides.push({id:12,type:args.rideType,object:objects.find(o=>o.index===args.rideObject),status:'closed'});cb({cost:10,ride:12});}else cb({cost:10});if(options.onExecute)options.onExecute({objects,rides,context});}};
     const config=require('../../bridge.config.json');
-    vm.runInNewContext(fs.readFileSync(require.resolve('../../dist/agent-bridge.js'),'utf8'),{context,objectManager:{getObject:(family,index)=>objects.find(o=>o.index===index),getAllObjects:()=>objects},map:{size:{x:128,y:128},rides,getRide:id=>rides.find(r=>r.id===id)},network:{mode:'none',createListener:()=>listener},park:{research:{isObjectResearched:()=>options.researched!==false}},scenario:{},date:{},console:{log:()=>{}},registerPlugin:p=>p.main()});
+    vm.runInNewContext(fs.readFileSync(require.resolve('../../dist/agent-bridge.js'),'utf8'),{context,objectManager:{getObject:(family,index)=>objects.find(o=>o.index===index),getAllObjects:()=>objects},map:{size:{x:128,y:128},rides,getRide:id=>rides.find(r=>r.id===id),getTile:()=>({elements:options.elements||[]})},network:{mode:'none',createListener:()=>listener},park:{research:{isObjectResearched:()=>options.researched!==false}},scenario:{},date:{},console:{log:()=>{}},registerPlugin:p=>p.main()});
     connect({on:(e,f)=>{events[e]=f;},write:s=>sent.push(JSON.parse(s)),end:()=>{}});
     function request(op,args={},extra={}){const req={id:'track-test-'+(++serial),op,args,token:config.token,...extra};events.data(JSON.stringify(req)+'\n');return req;}
     function result(req){return sent.find(r=>r.id===req.id);}

@@ -3,7 +3,7 @@
   "license": "SPDX-License-Identifier: GPL-3.0-only",
   "source": {
     "repository": "OpenRCT2/OpenRCT2",
-    "commit": "8694e3483690323b6a75fa7264b6c58116f51f31",
+    "commit": "82b309798a83346b7f9fc61a53847f4323deb19d",
     "description": "Native cell/wall and entrance hedge-clearing rules; see scripts/maze-layout.js attribution."
   },
   "description": "Relative 3x3 tiles with three horizontal routes joined by side columns. These pre-gate masks illustrate syntax and topology, not guest throughput or AI behavior. Native gates are applied last.",
