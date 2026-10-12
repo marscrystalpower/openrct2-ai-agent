@@ -21,6 +21,7 @@ No game assets, saved parks, screenshots, authentication tokens, session records
 ## Included
 
 - Park finances, scenario, guests and thoughts, staff, rides and operating statistics, bounded map inspection, and loaded object catalogs.
+- Detailed ride inspection with native test flags, departure waits, music, breakdown state, actual vehicle chains and seat capacity.
 - 41 schema-validated game actions covering rides, tracks, entrances/exits, paths, staff, prices, research, marketing, land, water, scenery, pause, and speed.
 - Full runtime catalog of 350 actual track pieces from the pinned engine, with ride-specific normal-construction and chain eligibility. The names table also contains aliases and sentinels; those are not extra buildable pieces.
 - Custom blueprints with repetition, curves, banking, slopes, chain lifts, brakes, inversions, diagonal transitions, per-piece colours and seat rotation. Some special track systems have additional engine constraints.
@@ -78,6 +79,26 @@ The bridge checks `park.research.isObjectResearched("ride", index)` in the pinne
 
 **Currency:** `hello` and `park` include currency metadata; `park.moneyDisplay`, ride `moneyDisplay`, query `costDisplay` and receipt display fields use the running game's native formatter. Use those strings in reports, following the actual selected currency, custom conversion rate, symbol placement and language. Never assume GBP from the repository, language, examples or raw money. The plugin cannot read a currency code reliably; the CLI reports `currency.configuredCode` and `profileSettings` from the explicitly selected profile, without guessing a code from `$`. Native display strings remain authoritative if settings are missing or have changed. API 124 narrows formatting arguments to signed 32-bit integers, so larger valid raw amounts are preserved with display `null`, rather than being wrapped or mislabeled.
 
+## Inspect ride operation and capacity
+
+`ride {"ride":12}` now includes an `inspection` object alongside all existing ride fields and money display strings. It is read-only, requires no arming, and does not save, test, close or change the ride. Use a request file:
+
+```json
+{"op":"ride","args":{"ride":12}}
+```
+
+- `testing` reports native `tested`, `testInProgress`, `onTrack`, `noRawStats`, `fixedRatings`, crash and stall flags, plus whether all three ratings are available. A testing status or existing rating alone is not test completion. The native `tested` flag is not proof that every train has completed a circuit; run and observe the intended full fleet. Flat rides can have ratings without raw track statistics.
+- `operation` reports the actual minimum/maximum waiting times in seconds, their enable flags, the load rule, synchronization, lift speed in mph, and music enable/object settings. Native clamping is reflected in these values. `musicObject:65535` is the native no-object sentinel; a selected object does not imply music is enabled. A load rule is active only when `waitForLoad:true`.
+- `maintenance` reports the breakdown string (`"none"` means no current breakdown), pending/broken/inspection flags, inspection interval enum and the native `isEmpty` value. A pending breakdown may still have `breakdown:"none"`.
+- `fleet.configuredTrains` reads the native train-slot count, including empty slots when a ride is closed and cleared. `spawnedTrains` counts resolvable head vehicles. Each train includes its current status, raw engine velocity, track location in world coordinates, vehicle chain, seats and assigned seats. `vehiclesPerTrain` counts all entities; `carsPerTrain` subtracts the ride object's `zeroCars`, matching the vehicle-tab car count. Invisible dummy cars therefore do not inflate the displayed count or seating capacity.
+- `fleet.totalSeats` and `assignedSeats` are totals only when the entire on-track fleet can be read. Absent vehicles, broken links, shared/cyclic chains, unreadable seats and inspection limits produce `null` totals rather than a partial count. Train-level `issues`, fleet `issues` and `unavailable` identify missing evidence. Traversal is bounded to 255 train slots and 4096 vehicle entities.
+
+`assignedSeats` counts non-null entries in each vehicle's native guest-slot list. Those slots can include boarding or stale assignments, so they are not a count of passengers physically aboard. Use the existing ride `guestCount` for the native rider count.
+
+API 124 does not expose the ride-specific maximum train/car settings or configured cars while vehicles are absent. `fleet.rideLimits` explicitly returns `null`. `objectCarLimits` contains static object metadata, including dummy cars; these are **not** the station/block/operating limits of the current ride. A null value means unknown, never zero. The inspector neither parses saves nor guesses unsupported settings.
+
+The new capability is `ride-inspection-v1` in the source manifest. The `rides` list retains its existing shape and avoids traversing every fleet; request details only for the rides being checked. This inspection does not replace circuit traversal, native visual review, full-fleet testing or guest-access checks.
+
 ## Build paths with matching object families
 
 Inspect the live `objects` catalogs before choosing path indices. `footpath` contains legacy combined paths; `footpath_surface` and `footpath_railings` contain the separate modern objects. Returned `type` and actual `index` identify the family and slot; array positions are not object indices. Modern surfaces also expose native `flags` and `isQueue` (`null` means it could not be verified).
@@ -122,7 +143,7 @@ Cheat-only ride-type changes (`ridesetsetting`, setting 10) are blocked. Compati
 5. Each action is queried immediately before execution. Later pieces depend on earlier ones, so there is no claim of an atomic full-layout preview. On failure, construction stops and reports the ride ID, completed actions, rejected step, and costs. Correct the problem and compile a plan for the missing portion after inspecting the result.
 6. Inspect map elements to find the first track tile's element index. `track.walk` takes `{x,y,elementIndex,limit}` in tile units; it follows the real engine track iterator to detect a circuit or gap.
 7. Connect entrance, exit, queue and ordinary paths. Example entrance entry: `{x:2016,y:2016,direction:1,station:0,isExit:false}`; these coordinates are illustrative, not validated against the sample. The engine determines entrance height from the station.
-8. Query and execute `ridesetstatus` with status 2 (testing). Let a train complete its circuit; inspect `ride` for speed, forces, excitement, intensity, nausea and reliability. Successful placement or setting the testing flag does not prove the train completes the circuit. Status 1 opens the ride only when ready.
+8. Query and execute `ridesetstatus` with status 2 (testing). Let the intended fleet complete its test; inspect `ride` for speed, forces, excitement, intensity, nausea and reliability, plus `inspection.testing` and `inspection.fleet` for the native test flags, actual cars and seat capacity. Successful placement or setting the testing flag does not prove the train completes the circuit. Status 1 opens the ride only when ready.
 
 Track-piece names come from generated/track-names.json. `track.catalog` supplies live geometry. The sample coordinates are illustrative and must be changed for the actual park. A physically slow or unsafe layout needs redesign even when it closes geometrically.
 

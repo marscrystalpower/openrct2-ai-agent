@@ -1,5 +1,17 @@
 # Verification and release status
 
+## Ride inspector (0.1.4) — 2026-10-10
+
+The existing read-only `ride` operation now includes native test flags, departure settings, music, breakdown/inspection state and a bounded walk of the actual train/car entities. Existing fields, the `rides` list and monetary display are preserved. `ride-inspection-v1` is included in the token-free source identity; the new runtime module participates in build hashes and the source-package allowlist.
+
+The implementation is checked against the pinned API 124 declarations and native `ScRide`, `ScVehicle`, `Ride.h` and ride-window bindings. Native train-slot arrays supply configured train counts. Vehicle seat getters mask native flags; vehicle chains supply actual capacity, and object `zeroCars` accounts for invisible dummy cars. Dynamic train/car maxima are not available through API 124 and remain explicitly null. The native `tested` flag, ratings and raw-statistics availability are kept separate; this does not certify every train's physics.
+
+All 209 automated tests pass with none skipped, including 14 new inspector tests for live and cleared fleets, dummy cars, flat rides, partial spawning, missing/wrong-ride entities, cycles/shared tails, traversal bounds, unavailable getters, test flags, departure/music/breakdown settings, read-only protocol behavior and pinned source semantics. Two localhost tests initially encountered sandbox network denial; both passed with localhost access available. No networking tests were skipped.
+
+Native Windows x64 validation used a separate headless OpenRCT2 0.5.6 instance, its own private profile/token/port and a copy of the completed Glasshouse Gardens checkpoint. The bridge remained unarmed and the park remained paused. Inspections succeeded for all 79 rides/facilities, including 32 complete vehicle fleets, with no unavailable scripting fields or invalid links. Read-only before/after park results were identical; the checkpoint hash was unchanged. A separate, checksum-verified PARK v63 reader cross-checked 731 assertions covering all ride flags, train counts, waits, lift speed, music, inspection intervals and every active fleet's entity count, seats and guest-slot assignments. This parser is verification tooling only and is not part of the bridge.
+
+Examples include the Cheshire car ride's 10 cars/20 seats, the ghost train's 8 cars/16 seats, a block coaster's 2 trains/72 seats and an articulated coaster's 2 trains/48 seats. The cross-check exposed that native guest-slot assignments can differ from the actual rider counter; the inspector therefore labels them `assignedSeats`, preserving `guestCount` for the native count. No gameplay commands, saves, new physics tests or changes to the user's active game/plugin were made during this validation. Closed/unspawned and corrupted-chain cases use mocked-engine tests, not native gameplay mutations.
+
 ## Currency and installed-source identity — 2026-10-10
 
 Bridge 0.1.3 adds native monetary display companions without changing raw amounts or command budgets. It uses the running game's scalar `context.formatString('{CURRENCY2DP}', value)` call, respecting selected currency, conversion rate, symbol placement and language. Values outside the API's signed-32-bit format range retain their raw value and return display `null`. Currency codes come only from an explicitly selected profile configuration, never from a dollar sign or language.

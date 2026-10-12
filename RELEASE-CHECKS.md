@@ -1,5 +1,9 @@
 # Share-package checks
 
+## Ride inspector — 2026-10-10
+
+Bridge 0.1.4 builds against the existing pinned engine and passes 209 automated tests. A separate native instance inspected 79 rides/facilities and 32 active fleets without changing the paused park; see VERIFICATION.md for the cross-check scope. The source allowlist includes `src/ride-inspector.js` and `test/ride-inspector.test.js`, and the runtime source manifest includes the new module and `ride-inspection-v1` capability. Local profile/configuration, authenticated bundles, native evidence and park copies remain excluded. This change does not qualify a fresh-machine installation or deploy to the user's active game.
+
 ## Currency and source identity — 2026-10-10
 
 Bridge 0.1.3 passes 195 automated tests and native USD display/installation checks. The package includes native money formatting, profile settings parsing, token-free source identity, source/edit preflight tests and the public bridge manifest. Source and installed bundle checks retain private authentication, profile paths, saves and journals locally. See VERIFICATION.md for native scope.

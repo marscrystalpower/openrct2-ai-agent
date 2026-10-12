@@ -1,24 +1,25 @@
 {
-  "version": "0.1.3",
+  "version": "0.1.4",
   "engineVersion": "0.5.6",
   "api": 124,
-  "sourceHash": "479e8814a2a97c957cfeea1e466ad14ee55c9e9022aff1ece520f38f73296848",
+  "sourceHash": "1101d70039336e00e5b85965968364018a61a92701c7bdf2b5c56b1021065248",
   "files": {
     "cli.js": "bae139b460818eab3f07551a5b636d82e1e3eb706e70126dfe6fd52a97b277a3",
     "generated/actions.json": "2942bb29f174869af7c3b15f772dcc2fd7b08fb29c5ec618c163c66cc5d074cd",
     "generated/colours.json": "c06c5d0d0b0f9039c80f43050a527669fbffaa096bd31fd32a3e2e827eb65733",
     "generated/track-names.json": "80cd49d616d0af71aa88e8dc96728a6c0c4ded531a452ba1145ba5e2dea419f8",
     "generated/track-support.json": "3f002f7fba276a57f43ae6732d595fc969b11f4400c28cd7146ba4c471d018ac",
-    "package.json": "84c0acd8df0023af236d180824e08671f0467f8857b2e65f257fd0f384ce1832",
-    "scripts/build.js": "d835ab4aaf024c20644e7201ee3c349b615d4bedef5bbaa3edd1a638619dee06",
+    "package.json": "b671e67cd5ce90f16c06d1aa24746260363319e9d63dfa5a48fd15f003fbd490",
+    "scripts/build.js": "01093f11c9c602e37b451407a6511402f5f071fda87beee6f8576f4624f56443",
     "scripts/colour-palette.js": "d182e30f6ecc58bc73dbc893e0e661f164fa577a14ce6b7c75acfb1faa6f98ac",
     "scripts/compatibility.json": "1d948ec996608766452cdcbba03a4ae564b55408255caba1aa15a147c8d23308",
     "scripts/display-settings.js": "ae6eaac3e241270819fe7b1decfb65772eaa91222da6bcfdfa9a6f8034dc5d25",
-    "scripts/source-manifest.js": "c0631278695fb4419aa602325921d3c336b687891888770154e5ab71493218a7",
+    "scripts/source-manifest.js": "41984d5839d927783fc06874ac236cefd1c62395291c59c532144f83c556a336",
     "scripts/track-support.js": "954ba9aa038e1c3ce5127b50af948ba77dc60e81f3f0d5931c6c69ca63f419b2",
     "src/core.js": "0354019db037a3ecaa17cc11aa6f261a193ad5efffd7383d8c195c6159c6d794",
     "src/money.js": "171d5ae3f9d124a2b39461efbb60fba9f4237d710b30765fdb2f05a40782a8fe",
-    "src/plugin.js": "9a4d95486a790f9a3a69f6a06878ade9f776673c4518f6a371161ccd3aa92718",
+    "src/plugin.js": "51c4d14d062ecb7fa8998609092356125bbd608094afe0cd1b16c877cf52391a",
+    "src/ride-inspector.js": "975e71a1b2e37564ecf0cb7d35a267d7974b4679c2ab3657ab985d11bf004aaf",
     "src/track-guard.js": "9f84501bdaba0f69c44ac67ed585038d1c9d1435967483bff1b4961a89fa237b"
   },
   "capabilities": [
@@ -26,6 +27,7 @@
     "path-object-family-v1",
     "normal-track-support-v1",
     "palette-74-v1",
-    "native-currency-format-v1"
+    "native-currency-format-v1",
+    "ride-inspection-v1"
   ]
 }

@@ -5,7 +5,7 @@ const fs = require('node:fs'), path = require('node:path'), crypto = require('no
 // Only public executable inputs belong here. Authentication, configuration,
 // Git metadata, local game state and generated bundles are deliberately absent.
 const SOURCE_FILES = Object.freeze([
-    'package.json', 'cli.js', 'src/core.js', 'src/plugin.js', 'src/track-guard.js', 'src/money.js',
+    'package.json', 'cli.js', 'src/core.js', 'src/plugin.js', 'src/track-guard.js', 'src/money.js', 'src/ride-inspector.js',
     'scripts/build.js', 'scripts/compatibility.json', 'scripts/colour-palette.js',
     'scripts/track-support.js', 'scripts/display-settings.js', 'scripts/source-manifest.js',
     'generated/actions.json', 'generated/colours.json', 'generated/track-names.json',
@@ -13,7 +13,7 @@ const SOURCE_FILES = Object.freeze([
 ].sort());
 const CAPABILITIES = Object.freeze([
     'native-research-bitmap-v1', 'path-object-family-v1', 'normal-track-support-v1',
-    'palette-74-v1', 'native-currency-format-v1'
+    'palette-74-v1', 'native-currency-format-v1', 'ride-inspection-v1'
 ]);
 const hash = text => crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 const normalize = text => text.replace(/\r\n?/g, '\n');
