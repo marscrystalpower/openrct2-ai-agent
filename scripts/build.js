@@ -48,7 +48,7 @@ if(config.host!=='127.0.0.1'|| !/^[a-f0-9]{64}$/.test(config.token) || !Number.i
 const header='// Generated for OpenRCT2 v'+compatibility.openrct2+' / API '+compatibility.api+'. Contains a local authentication token; do not share.\n';
 const identity={version:manifest.version,engineVersion:manifest.engineVersion,api:manifest.api,sourceHash:manifest.sourceHash,capabilities:manifest.capabilities};
 const bundle=header+'var BRIDGE_CONFIG='+JSON.stringify({host:config.host,port:config.port,token:config.token})+';\nvar BRIDGE_INFO='+JSON.stringify({...compatibility,version,bridgeManifest:identity})+';\nvar COLOUR_PALETTE='+JSON.stringify(palette)+';\nvar TRACK_NAMES='+JSON.stringify(names)+';\nvar ACTION_SCHEMAS='+JSON.stringify(schemas)+';\nvar TRACK_SUPPORT='+JSON.stringify(trackSupport)+';\n'+
-    fs.readFileSync(path.join(root,'src/core.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/money.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/track-guard.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/plugin.js'),'utf8');
+    fs.readFileSync(path.join(root,'src/core.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/money.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/track-guard.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/ride-inspector.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/plugin.js'),'utf8');
 fs.mkdirSync(path.join(root,'dist'),{recursive:true});
 fs.writeFileSync(path.join(root,'dist/agent-bridge.js'),bundle);
 fs.writeFileSync(path.join(root,'dist/build-info.json'),JSON.stringify({version,...compatibility,bridgeManifest:identity,sha256:crypto.createHash('sha256').update(bundle).digest('hex'),actions:allow.length,trackNames:Object.keys(names).length,colours:palette.totalCount},null,2)+'\n');
