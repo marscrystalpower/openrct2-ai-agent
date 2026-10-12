@@ -171,7 +171,7 @@
             }
             case 'park':return {session:session,paused:context.paused,speed:context.gameSpeed,mapSize:map.size,park:Object.assign(pick(park,['name','cash','rating','bankLoan','maxBankLoan','entranceFee','guests','value','companyValue','suggestedGuestMaximum']),{messages:(park.messages||[]).map(function(m){return pick(m,['type','subject','text','month','tickCount','isArchived']);})}),scenario:Object.assign(pick(scenario,['name','status']),{objective:pick(scenario.objective||{},['type','guests','year','length','excitement','parkValue','monthlyIncome'])}),date:pick(date,['monthsElapsed','month','day'])};
             case 'rides':return map.rides.map(rideView);
-            case 'ride':return rideView(getRide(a.ride));
+            case 'ride':{var inspectedRide=getRide(a.ride);return Object.assign(rideView(inspectedRide),{inspection:BridgeRideInspector.inspect(inspectedRide,map)});}
             case 'map':{
                 var x=C.integer(a.x,'tile x',0,map.size.x-1), y=C.integer(a.y,'tile y',0,map.size.y-1);
                 var w=C.integer(a.width===undefined?1:a.width,'width',1,32), h=C.integer(a.height===undefined?1:a.height,'height',1,32);
