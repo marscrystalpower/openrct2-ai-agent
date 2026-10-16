@@ -22,7 +22,8 @@ No game assets, saved parks, screenshots, authentication tokens, session records
 
 - Park finances, scenario, guests and thoughts, staff, rides and operating statistics, bounded map inspection, and loaded object catalogs.
 - Detailed ride inspection with native test flags, departure waits, music, breakdown state, actual vehicle chains and seat capacity.
-- 41 schema-validated game actions covering rides, tracks, entrances/exits, paths, staff, prices, research, marketing, land, water, scenery, pause, and speed.
+- Read-only path connection inspection and bounded route tracing, including slopes, banner restrictions and possible missing joins.
+- 44 schema-validated game actions covering rides, tracks, entrances/exits, paths, no-entry banners, staff, prices, research, marketing, land, water, scenery, pause, and speed.
 - Full runtime catalog of 350 actual track pieces from the pinned engine, with ride-specific normal-construction and chain eligibility. The names table also contains aliases and sentinels; those are not extra buildable pieces.
 - Custom blueprints with repetition, curves, banking, slopes, chain lifts, brakes, inversions, diagonal transitions, per-piece colours and seat rotation. Some special track systems have additional engine constraints.
 - New-coaster construction or appending to an existing closed ride; optional entrance/exit placement and testing; existing-track traversal with gap/circuit detection.
@@ -116,6 +117,87 @@ The bridge rejects unknown construction bits, wrapped/sentinel object indices, m
 
 The native action can accept invalid object references and create invisible, walkable paths. Its success is therefore insufficient verification. `map` read-back exposes `object` for legacy paths, or `surfaceObject` and `railingsObject` for modern paths, together with `isQueue`. After building, check those references, native visibility, queue connections, and actual guest access. These guards do not repair existing paths or prove the resulting guest network works.
 
+## Automatic facility and ride access checks
+
+The ordinary CLI `park`, `rides` and `ride` requests now include `access` results. The client automatically waits for the initial audit when needed, so a single overview identifies named access problems without a guest survey, map inspection or screenshot. `path.access` requests the full park audit directly; no coordinates are required:
+
+```powershell
+node cli.js park
+node cli.js path.access
+node cli.js path.access '{"refresh":true}'
+```
+
+The audit checks the actual front sides of shop/facility footprints, ride entrances and exits, and the native center tiles of park entrances. It validates doorway height, slope alignment and stored doorway edges, then checks directed access to or from the park entrance network. Queues may provide access only to their own ride and station; queues for other rides cannot act as public shortcuts. A multi-sided shop needs one usable approach that also permits a return route. Legal pickup-only and dropoff-only ride stations are supported.
+
+`warnings` reports real endpoint failures: missing front paths or doorway edges, incompatible heights, wrong queues, one-way restrictions, unreachable ride queues and isolated exit paths. Each warning identifies the ride/facility and location, with bounded supporting evidence for a likely nearby gap. Boundary walls explain missing connections; trees and ride supports are not assumed to block an existing native connection. Closed/testing rides appear as informational `observations`, keeping construction details out of the active guest-access warning count. An open ride with a missing required gate is checked against the native station rules.
+
+Intentional gaps elsewhere in the path network do not produce access warnings. The detailed `path.inspect` operation below still exposes raw adjacency observations for construction/debugging, but those are not the primary health report. Park gates are handled explicitly rather than treating the outside forecourt as a disconnected park.
+
+Work is divided over bounded game ticks. Direct protocol overviews can initially return `access.status:"checking"`; `path.access` waits for the result, and the CLI performs that wait automatically. Results are cached for up to two seconds and invalidated when a native action, map load or map resize changes the inspection revision. Changes during a scan cancel that scan so it cannot publish an old healthy result. Missing data, unsupported metadata or exhausted limits produce `unknown`/incomplete results. There is no fallback that guesses the largest path component is the park entrance network.
+
+The source identity advertises `facility-access-v1`. All checks are read-only and require the pinned API. They establish structural guest access under the reported rules; dynamic vehicle blockages and actual congestion are separate operating observations.
+
+## Detailed path connection inspection
+
+`path.inspect` reads a rectangle of up to 32 by 32 tiles, plus neighboring tiles needed to inspect connections across its boundary. It works without arming and does not read guest thoughts or change the park. The source manifest advertises `path-inspection-v1`. For example, after building a junction:
+
+```powershell
+node cli.js path.inspect '{"x":60,"y":60,"width":8,"height":8}'
+node cli.js path.route '{"start":{"x":60,"y":60,"elementIndex":1},"end":{"x":67,"y":67,"elementIndex":1},"limit":1024}'
+```
+
+These coordinates and element indices are illustrative. Use `map` or `path.inspect` to select actual footpath elements. Request coordinates are tiles; returned native positions and heights use world units (32 per XY tile). Directions are 0=(-x), 1=(+y), 2=(+x), 3=(-y). Separate elements at different heights remain separate nodes.
+
+Inspection exposes each path's stored edges and native permitted edges, its reachable neighboring footpaths, and observations for each direction. It flags compatible adjacent paths without a stored join, asymmetric edge bits, banner restrictions and temporary vehicle blockage. A possible gap is a prompt to investigate: adjacent queue tiles, deliberate separations and height changes can be intentional. Walls on a missing boundary are construction evidence; nearby trees, scenery and tracks are context. The tool does not assume that visual overlap blocks a connected path. Ride supports are not independent path-navigation obstacles.
+
+The native navigator respects no-entry banners, includes queues and wide paths, and excludes preview/ghost paths. It follows outgoing stored edges and chooses the first eligible neighbor in tile order; it does not require the neighbor's reverse edge. The inspector reports that asymmetry separately. `path.route` searches this directed footpath graph, with a default limit of 1024 visited nodes and a maximum of 4096. A result of `found:null` means the search was incomplete or capped; it does not establish that no route exists.
+
+Inspection limits include 4096 path nodes, 4096 evidence elements and bounded geometry/wall comparisons and diagnostics. Evidence is stored once in `evidence`; `evidenceTiles` maps tile keys to evidence keys, and each direction's `nearbyEvidence` references its two tiles. Missing native APIs, unreadable data or exhausted limits produce an explicit incomplete/truncated result; inspect a smaller region for details.
+
+These tools inspect footpath topology, not the complete guest decision process. Routes through queues are not filtered for a particular guest's destination. The navigator does not traverse ride entrances/exits, shop counters or park entrance elements, and vehicle blockage can change. An outgoing edge without a neighboring footpath may lead to a valid facility endpoint. A route proves structural reachability under the stated rules, not congestion-free access, placement legality or actual guest use. Check the relevant connections after construction, then verify endpoints, normal rendering and guest flow as appropriate.
+
+## Ride design, furniture and pricing review (0.1.7)
+
+Ordinary `park` inspection now includes `rideReview` and park-entry `pricing`; `rides` and `ride` include `design` and item `pricing`. These are read-only observations alongside structural `access`. Connected endpoints and high ratings can coexist with a long single-train circuit, unnecessary banking at a lift crest, missing amenities or default photo prices.
+
+The design audit follows the native circuit from a station, with a maximum of 4096 pieces per ride and 16384 uncached pieces per overview. It identifies banked turns following a chain lift before a drop or powered acceleration, counts ordinary versus block brakes and photos, and highlights circuits of at least 90 seconds running one train with zero block brakes when the native ride type supports a block operating mode. Findings ask for design review; they do not estimate turn speed, certify a multi-train system or change the track. Partial circuits and exhausted limits return `unknown`. Inspect the individual ride for a full budget. Cache results expire after two seconds and native actions invalidate them.
+
+`map` now exposes path additions and native damage/fullness fields. `path.inspect` includes per-path furniture and a bounded furniture inventory. The full `path.access` audit returns a separate `furniture` report, also included in `park.access.furniture`, with bench/bin/lamp counts, usable public furniture, broken-item warnings and full-bin warnings. Complete public-network evidence with no usable benches or bins produces advisories. Native bin status distinguishes full slots from vandalism; ghost additions do not supply amenities. Standard object classification uses an included 20-object metadata reference; custom objects without verified metadata remain unknown. Inventory does not assess seat occupancy, spacing or nearby ride demand; local coverage is assessed separately below. Furniture issues never change navigation endpoint counts.
+
+## Local exit and food amenities (0.1.8)
+
+Ordinary `park`, `rides` and `ride` overviews now include `access.amenities`. The full `path.access` report contains every audited site; overviews retain bounded sites and observations with omitted counts. This read-only job reuses the access audit's native directed public path graph and actual doorway connections. It needs no guest thoughts, screenshot or manual coordinates. Distances count connected path steps, with the first path tile outside the doorway at distance zero; queues and disconnected height layers cannot provide nearby furniture.
+
+As of 0.1.9, ride exit sites follow permitted outgoing connections across paths that lead back to a park entrance. They do not require guests to be able to walk toward the exit from the main park. A correctly oriented no-entry sign can protect an exit corridor without hiding its benches and bins from the audit. Shop sites retain the public network that permits both arrival and return. Each site's `routePolicy` records which rule it uses. Missing route evidence remains unknown; the audit never ignores banners or invents reverse links to satisfy furniture targets.
+
+These are design heuristics requested for this bridge, not native guest demand equations:
+
+| Ride nausea | Recommended usable bench-equipped path tiles within 10 steps | First bench within |
+| --- | --- | --- |
+| Below 2.50 | No exit bench minimum | — |
+| 2.50–3.99 | 2 | 4 steps |
+| 4.00–5.99 | 3 | 4 steps |
+| 6.00–7.99 | 5 | 3 steps |
+| 8.00 or higher | 7 | 3 steps |
+
+All ride exits are reviewed for at least one usable bin within six steps, including gentle rides. Native food/drink item categories identify stalls needing three bench-equipped path tiles within eight steps and two bins within ten, with the first bench and bin each within four. Ride names and categories do not override an actual measured nausea rating. Missing ratings leave bench demand unknown while bins can still be assessed.
+
+Only usable, nonpreview, unbroken furniture counts; benches require level public paths with free sides, and bins need at least one usable nonfull slot. Unknown custom furniture or incomplete path searches cannot establish a shortfall. Nearby sites may share furniture: recommendations are not additive construction orders, and candidate empty tiles still require normal native placement queries. Spread additions across routes and shared rest areas instead of filling every tile. Continue providing benches and bins throughout the wider park; these checks focus on local demand and do not certify all park-wide spacing.
+
+Native guests check their next path tile for seating; they do not follow this audit's search to a distant bench. The report measures furniture placement rather than occupied seats, traffic volume, recovery time or vomiting probability. New-build reviews should read `access.amenities` after the automatic audit finishes; a pending review is not a completed amenity check.
+
+## Building protected exit routes (0.1.9)
+
+An outward-only exit corridor is an intentional layout option. Build a normally connected public path from the actual ride exit to the main network, provide suitable furniture along that route, and use a no-entry sign where it usefully prevents main-path guests walking toward the exit. Verify that guests leaving the ride can still reach the park gate. Existing signs do not need removal merely because the corridor cannot be entered from the main path.
+
+`objects` accepts `type: "banner"` to discover loaded sign objects. Three native actions are available through the existing query, execution, budget, session and receipt workflow: `bannerplace`, `bannersetstyle` and `bannerremove`. Inspect `generated/actions.json` for exact fields. Placement uses world XY and the native path-height argument; removal uses the banner element's native base Z, so do not reuse placement Z blindly. Place the sign first, reconcile its receipt and read back the returned `bannerIndex` or native map reference, then use a new request to set the no-entry style with `type: 2` and `parameter: 1` (or `0` to disable). A single static batch cannot substitute a newly returned banner ID into a later action.
+
+The bridge supports only the no-entry style switch through `bannersetstyle`; it validates loaded object family, coordinates, direction, palette IDs and nonwrapped selectors before the normal native query. Ownership, actual path edges and native placement rules still apply. Read-back includes `bannerIndex` and `isNoEntry`, but the banner edge mask is not exposed by API 124. Verify permitted directions using `path.inspect`/`path.route` and the automatic access/amenity audit. Do not write the scripting `isNoEntry` property directly: the pinned setter changes the display flag without updating the traversal mask, while the native style action updates both.
+
+## Pricing review (0.1.7)
+
+Pricing inspection identifies native shop items and photo variants, shows current prices and native item values with display strings, and flags prices below useful references. Every native photo type has a 30-raw-unit reference ($3.00 in USD) at or below which price itself causes no refusals. Guests still need sufficient cash and photo eligibility; this is not a guarantee of purchase. Food, drinks and souvenirs have different values, weather can change them, and umbrellas bypass price refusal during precipitation while affordability remains relevant. Park entry inspection reports the native guest-generation penalties relative to ride value. Recommendations are starting points for profit review; they do not automatically change prices or claim a universal profit optimum. Successful `coaster.build` receipts also include a `postBuildReview` so default settings are reviewed immediately; pending access or test results remain explicit.
+
 ## Colours and terrain painting
 
 `colours` returns the source-verified 74-entry palette. The 18 colours added in 0.5.6 use IDs 56..73; invisible and void remain 54 and 55. Actual colour arguments accept IDs 0..73. Track placement `colour` is a scheme index 0..3. Use `ridesetappearance` to change track and vehicle colours, then inspect `ride` for `colourSchemes` and `vehicleColours`.
@@ -143,7 +225,8 @@ Cheat-only ride-type changes (`ridesetsetting`, setting 10) are blocked. Compati
 5. Each action is queried immediately before execution. Later pieces depend on earlier ones, so there is no claim of an atomic full-layout preview. On failure, construction stops and reports the ride ID, completed actions, rejected step, and costs. Correct the problem and compile a plan for the missing portion after inspecting the result.
 6. Inspect map elements to find the first track tile's element index. `track.walk` takes `{x,y,elementIndex,limit}` in tile units; it follows the real engine track iterator to detect a circuit or gap.
 7. Connect entrance, exit, queue and ordinary paths. Example entrance entry: `{x:2016,y:2016,direction:1,station:0,isExit:false}`; these coordinates are illustrative, not validated against the sample. The engine determines entrance height from the station.
-8. Query and execute `ridesetstatus` with status 2 (testing). Let the intended fleet complete its test; inspect `ride` for speed, forces, excitement, intensity, nausea and reliability, plus `inspection.testing` and `inspection.fleet` for the native test flags, actual cars and seat capacity. Successful placement or setting the testing flag does not prove the train completes the circuit. Status 1 opens the ride only when ready.
+8. Review lift-crest banking, block sections, intended train count, queue size, working benches and bins, and admission/photo prices. Read `postBuildReview` and the ordinary `park`/`ride` reports; resolve review findings and incomplete evidence. A photo-equipped new coaster should normally charge the native 30-raw-unit reference when money rules permit.
+9. Query and execute `ridesetstatus` with status 2 (testing). Let the intended fleet complete its test; inspect `ride` for speed, forces, excitement, intensity, nausea and reliability, plus `inspection.testing` and `inspection.fleet` for the native test flags, actual cars and seat capacity. Successful placement or setting the testing flag does not prove the train completes the circuit. Status 1 opens the ride only when ready.
 
 Track-piece names come from generated/track-names.json. `track.catalog` supplies live geometry. The sample coordinates are illustrative and must be changed for the actual park. A physically slow or unsafe layout needs redesign even when it closes geometrically.
 

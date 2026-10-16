@@ -81,6 +81,19 @@ var BridgeCore = (function () {
                 v.forEach(function(p){integer(p.x,'x',0,32736);integer(p.y,'y',0,32736);});
             } else if (!['number','Direction','boolean','string','CoordsXY[]'].includes(type)) fail('Unsupported schema '+type);
         });
+        if(name==='bannerplace'||name==='bannerremove'){
+            integer(args.x,'banner world x',0,32736);integer(args.y,'banner world y',0,32736);
+            // Native placement adds 16 to the base and 32 to clearance. Keep
+            // both inside the uint8 tile-height representation, without wraps.
+            integer(args.z,'banner world z',0,name==='bannerplace'?2008:2040);
+            integer(args.direction,'banner direction',0,3);
+            if(args.x%32||args.y%32||args.z%8)fail('Banner coordinates must use world XY multiples of 32 and Z multiples of 8');
+            if(name==='bannerplace')integer(args.object,'banner object index',0,254);
+        }else if(name==='bannersetstyle'){
+            integer(args.id,'banner id',0,65534);
+            if(args.type!==2)fail('Only native banner no-entry style type 2 is supported');
+            integer(args.parameter,'no-entry parameter (0 disable, 1 enable)',0,1);
+        }
         return args;
     }
     return {integer:integer,rotate:rotate,advance:advance,plan:plan,same:same,validateAction:validateAction};

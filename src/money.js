@@ -27,18 +27,34 @@ var BridgeMoney = (function () {
             });
             return result;
         }
+        function pricing(value) {
+            if(!value || typeof value!=='object')return value;
+            var result=Object.assign({},value),display=fields(value,['currentPrice','referencePrice','stockCost','unitMargin','noPriceRefusalReference','legalPriceLimit','candidatePrice',
+                'configuredEntranceFee','effectiveEntranceFee','totalRideValueForMoney','noGenerationPenaltyReference']);
+            if(Object.keys(display).length)result.moneyDisplay=display;
+            ['items','warnings','observations'].forEach(function(key){if(Array.isArray(value[key]))result[key]=value[key].map(pricing);});
+            if(value.recommendation)result.recommendation=pricing(value.recommendation);
+            if(value.nativeValues)result.nativeValues=Object.assign({},value.nativeValues,{moneyDisplay:fields(value.nativeValues,['base','hot','cold'])});
+            if(value.valueRange)result.valueRange=Object.assign({},value.valueRange,{moneyDisplay:fields(value.valueRange,['min','max'])});
+            return result;
+        }
         function ride(value) {
-            return Object.assign({}, value, {moneyDisplay:fields(value,['price','incomePerHour','profit'])});
+            return Object.assign({}, value, {moneyDisplay:fields(value,['price','incomePerHour','profit'])},value.pricing?{pricing:pricing(value.pricing)}:{});
         }
         function enrich(op, value) {
             if (!value || typeof value !== 'object') return value;
-            if (op === 'park') return Object.assign({}, value, {currency:info(),
-                moneyDisplay:fields(value.park,['cash','bankLoan','maxBankLoan','entranceFee','value','companyValue'])});
+            if (op === 'park') {
+                var enriched=Object.assign({}, value, {currency:info(),moneyDisplay:fields(value.park,['cash','bankLoan','maxBankLoan','entranceFee','value','companyValue'])});
+                if(value.pricing)enriched.pricing=pricing(value.pricing);
+                if(value.rideReview)enriched.rideReview=Object.assign({},value.rideReview,{rides:value.rideReview.rides.map(function(r){return Object.assign({},r,{pricing:pricing(r.pricing)});}),observations:value.rideReview.observations.map(pricing)});
+                return enriched;
+            }
             if (op === 'ride') return ride(value);
             if (op === 'rides') return value.map(ride);
             if (op === 'action.query') return Object.assign({}, value, {costDisplay:format(value.cost)});
             if (['action.execute','batch.execute','track.build','coaster.build','receipt'].indexOf(op) >= 0) {
                 var result = Object.assign({}, value);
+                if(value.postBuildReview && value.postBuildReview.pricing)result.postBuildReview=Object.assign({},value.postBuildReview,{pricing:pricing(value.postBuildReview.pricing)});
                 if (value.spent !== undefined) result.spentDisplay = format(value.spent);
                 if (Array.isArray(value.completed)) result.completed = value.completed.map(function (item) {
                     return Object.assign({}, item, {result:Object.assign({},item.result,{costDisplay:format(item.result && item.result.cost)})});

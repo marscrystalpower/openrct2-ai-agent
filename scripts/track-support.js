@@ -191,6 +191,8 @@ function generateTrackSupport(sourceRoot) {
     for (const file of headers(base + 'rtd')) declarations(read(file), rtdPattern, descriptors, 'ride descriptor');
     const mapping = split(matchBlock(rideData, /kRideTypeDescriptors\[RIDE_TYPE_COUNT\]\s*=\s*\{/, 'ride descriptor mapping'));
     const rideHeader = read(base + 'Ride.h');
+    const rideModes = parseEnum(rideHeader, 'RideMode');
+    check(rideModes.count === 37 && rideModes.nullMode === 255, 'ride mode count changed');
     const rideEnumBody = /enum\s*\{\s*(RIDE_TYPE_SPIRAL_ROLLER_COASTER[\s\S]*?RIDE_TYPE_COUNT\s*)\}/.exec(rideHeader);
     check(rideEnumBody, 'missing ride type enum');
     const rideEnum = parseEnumBody(rideEnumBody[1], 'ride types');
@@ -202,6 +204,7 @@ function generateTrackSupport(sourceRoot) {
         const name = /^"([a-z0-9_]+)"$/.exec(requireField(data, 'Name', key));
         check(start && Object.hasOwn(elementEnum, start[1]) && elementEnum[start[1]] < EXPECTED.segments && name, 'invalid ride name/start piece: ' + key);
         return { id, name: name[1], startTrackPiece: elementEnum[start[1]], flags: flags(requireField(data, 'flags', key), key),
+            rideModes: namespacedList(requireField(data, 'rideModes', key), 'RideMode', rideModes, key).map(name => rideModes[name]),
             regular: drawer(requireField(data, 'TrackPaintFunctions', key), key),
             inverted: drawer(requireField(data, 'InvertedTrackPaintFunctions', key), key) };
     });
@@ -248,7 +251,7 @@ function generateTrackSupport(sourceRoot) {
         return { id, name: byId[id], trackGroup: trackGroups[group[1]],
             beginSlope: endpoint(2, 'TrackPitch', trackPitches), endSlope: endpoint(1, 'TrackPitch', trackPitches),
             beginBank: endpoint(4, 'TrackRoll', trackRolls), endBank: endpoint(3, 'TrackRoll', trackRolls),
-            flags: { allowLiftHill: flagSet.has('allowLiftHill'), curveAllowsLift: flagSet.has('curveAllowsLift'), isSteepUp: flagSet.has('isSteepUp'), isBanked: flagSet.has('banked'), isInversion: flagSet.has('inversionToNormal') },
+            flags: { allowLiftHill: flagSet.has('allowLiftHill'), curveAllowsLift: flagSet.has('curveAllowsLift'), isSteepUp: flagSet.has('isSteepUp'), isBanked: flagSet.has('banked'), isBankedTurn: flagSet.has('turnBanked'), isInversion: flagSet.has('inversionToNormal') },
             alternateTypeSegment: alternate && elementEnum[alternate[1]] !== elementEnum.none ? elementEnum[alternate[1]] : null,
             coveredBase: null, forceChain: forced.slice(1).includes(byId[id]) };
     });
@@ -334,7 +337,7 @@ function generateTrackSupport(sourceRoot) {
     // A matching HEAD alone is insufficient: locally modified extraction inputs are not pinned source.
     try { git(['diff', '--quiet', SOURCE_COMMIT, '--', ...[...used].sort()]); }
     catch { throw new Error('Track support extraction: upstream extraction sources differ from pinned revision'); }
-    return { sourceCommit: SOURCE_COMMIT, rideTypes, trackGroups, requiredSprites, segments, constants, trackPitches, trackRolls };
+    return { sourceCommit: SOURCE_COMMIT, rideTypes, rideModes, trackGroups, requiredSprites, segments, constants, trackPitches, trackRolls };
 }
 module.exports = { generateTrackSupport, SOURCE_COMMIT };
 if (require.main === module) {

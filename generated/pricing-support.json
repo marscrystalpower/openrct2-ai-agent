@@ -1,0 +1,1637 @@
+{
+  "sourceCommit": "82b309798a83346b7f9fc61a53847f4323deb19d",
+  "items": [
+    {
+      "id": 0,
+      "name": "balloon",
+      "cost": 3,
+      "values": {
+        "base": 14,
+        "hot": 14,
+        "cold": 14
+      },
+      "defaultPrice": 9,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 1,
+      "name": "toy",
+      "cost": 15,
+      "values": {
+        "base": 30,
+        "hot": 30,
+        "cold": 30
+      },
+      "defaultPrice": 25,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 2,
+      "name": "map",
+      "cost": 1,
+      "values": {
+        "base": 7,
+        "hot": 7,
+        "cold": 8
+      },
+      "defaultPrice": 6,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 3,
+      "name": "photo",
+      "cost": 2,
+      "values": {
+        "base": 30,
+        "hot": 30,
+        "cold": 30
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": true,
+      "isContainer": false
+    },
+    {
+      "id": 4,
+      "name": "umbrella",
+      "cost": 20,
+      "values": {
+        "base": 35,
+        "hot": 25,
+        "cold": 50
+      },
+      "defaultPrice": 25,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 5,
+      "name": "drink",
+      "cost": 3,
+      "values": {
+        "base": 12,
+        "hot": 20,
+        "cold": 10
+      },
+      "defaultPrice": 12,
+      "isFood": false,
+      "isDrink": true,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 6,
+      "name": "burger",
+      "cost": 5,
+      "values": {
+        "base": 19,
+        "hot": 19,
+        "cold": 22
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 7,
+      "name": "chips",
+      "cost": 4,
+      "values": {
+        "base": 16,
+        "hot": 16,
+        "cold": 18
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 8,
+      "name": "iceCream",
+      "cost": 4,
+      "values": {
+        "base": 10,
+        "hot": 15,
+        "cold": 6
+      },
+      "defaultPrice": 9,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 9,
+      "name": "candyfloss",
+      "cost": 3,
+      "values": {
+        "base": 9,
+        "hot": 9,
+        "cold": 6
+      },
+      "defaultPrice": 8,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 10,
+      "name": "emptyCan",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 11,
+      "name": "rubbish",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 12,
+      "name": "emptyBurgerBox",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 13,
+      "name": "pizza",
+      "cost": 6,
+      "values": {
+        "base": 21,
+        "hot": 21,
+        "cold": 25
+      },
+      "defaultPrice": 16,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 14,
+      "name": "voucher",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 15,
+      "name": "popcorn",
+      "cost": 5,
+      "values": {
+        "base": 13,
+        "hot": 13,
+        "cold": 11
+      },
+      "defaultPrice": 12,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 16,
+      "name": "hotDog",
+      "cost": 5,
+      "values": {
+        "base": 17,
+        "hot": 17,
+        "cold": 20
+      },
+      "defaultPrice": 10,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 17,
+      "name": "tentacle",
+      "cost": 11,
+      "values": {
+        "base": 22,
+        "hot": 20,
+        "cold": 18
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 18,
+      "name": "hat",
+      "cost": 9,
+      "values": {
+        "base": 27,
+        "hot": 32,
+        "cold": 24
+      },
+      "defaultPrice": 15,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 19,
+      "name": "toffeeApple",
+      "cost": 4,
+      "values": {
+        "base": 10,
+        "hot": 10,
+        "cold": 10
+      },
+      "defaultPrice": 7,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 20,
+      "name": "tShirt",
+      "cost": 20,
+      "values": {
+        "base": 37,
+        "hot": 37,
+        "cold": 37
+      },
+      "defaultPrice": 30,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 21,
+      "name": "doughnut",
+      "cost": 4,
+      "values": {
+        "base": 8,
+        "hot": 7,
+        "cold": 10
+      },
+      "defaultPrice": 7,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 22,
+      "name": "coffee",
+      "cost": 3,
+      "values": {
+        "base": 11,
+        "hot": 15,
+        "cold": 20
+      },
+      "defaultPrice": 12,
+      "isFood": false,
+      "isDrink": true,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 23,
+      "name": "emptyCup",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 24,
+      "name": "chicken",
+      "cost": 5,
+      "values": {
+        "base": 19,
+        "hot": 19,
+        "cold": 22
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 25,
+      "name": "lemonade",
+      "cost": 4,
+      "values": {
+        "base": 11,
+        "hot": 21,
+        "cold": 10
+      },
+      "defaultPrice": 12,
+      "isFood": false,
+      "isDrink": true,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 26,
+      "name": "emptyBox",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 27,
+      "name": "emptyBottle",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 28,
+      "name": null,
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 29,
+      "name": null,
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 30,
+      "name": null,
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 31,
+      "name": "admission",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 32,
+      "name": "photo2",
+      "cost": 2,
+      "values": {
+        "base": 30,
+        "hot": 30,
+        "cold": 30
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": true,
+      "isContainer": false
+    },
+    {
+      "id": 33,
+      "name": "photo3",
+      "cost": 2,
+      "values": {
+        "base": 30,
+        "hot": 30,
+        "cold": 30
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": true,
+      "isContainer": false
+    },
+    {
+      "id": 34,
+      "name": "photo4",
+      "cost": 2,
+      "values": {
+        "base": 30,
+        "hot": 30,
+        "cold": 30
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": true,
+      "isContainer": false
+    },
+    {
+      "id": 35,
+      "name": "pretzel",
+      "cost": 5,
+      "values": {
+        "base": 11,
+        "hot": 11,
+        "cold": 11
+      },
+      "defaultPrice": 11,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 36,
+      "name": "chocolate",
+      "cost": 4,
+      "values": {
+        "base": 13,
+        "hot": 13,
+        "cold": 20
+      },
+      "defaultPrice": 12,
+      "isFood": false,
+      "isDrink": true,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 37,
+      "name": "icedTea",
+      "cost": 3,
+      "values": {
+        "base": 10,
+        "hot": 20,
+        "cold": 10
+      },
+      "defaultPrice": 11,
+      "isFood": false,
+      "isDrink": true,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 38,
+      "name": "funnelCake",
+      "cost": 5,
+      "values": {
+        "base": 13,
+        "hot": 11,
+        "cold": 14
+      },
+      "defaultPrice": 12,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 39,
+      "name": "sunglasses",
+      "cost": 8,
+      "values": {
+        "base": 15,
+        "hot": 20,
+        "cold": 12
+      },
+      "defaultPrice": 15,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": true,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 40,
+      "name": "beefNoodles",
+      "cost": 7,
+      "values": {
+        "base": 17,
+        "hot": 17,
+        "cold": 20
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 41,
+      "name": "friedRiceNoodles",
+      "cost": 6,
+      "values": {
+        "base": 17,
+        "hot": 17,
+        "cold": 20
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 42,
+      "name": "wontonSoup",
+      "cost": 4,
+      "values": {
+        "base": 13,
+        "hot": 13,
+        "cold": 15
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 43,
+      "name": "meatballSoup",
+      "cost": 5,
+      "values": {
+        "base": 14,
+        "hot": 14,
+        "cold": 16
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 44,
+      "name": "fruitJuice",
+      "cost": 4,
+      "values": {
+        "base": 11,
+        "hot": 19,
+        "cold": 11
+      },
+      "defaultPrice": 12,
+      "isFood": false,
+      "isDrink": true,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 45,
+      "name": "soybeanMilk",
+      "cost": 4,
+      "values": {
+        "base": 10,
+        "hot": 14,
+        "cold": 10
+      },
+      "defaultPrice": 12,
+      "isFood": false,
+      "isDrink": true,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 46,
+      "name": "sujeonggwa",
+      "cost": 3,
+      "values": {
+        "base": 11,
+        "hot": 14,
+        "cold": 11
+      },
+      "defaultPrice": 12,
+      "isFood": false,
+      "isDrink": true,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 47,
+      "name": "subSandwich",
+      "cost": 5,
+      "values": {
+        "base": 19,
+        "hot": 19,
+        "cold": 17
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 48,
+      "name": "cookie",
+      "cost": 4,
+      "values": {
+        "base": 8,
+        "hot": 8,
+        "cold": 8
+      },
+      "defaultPrice": 7,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 49,
+      "name": "emptyBowlRed",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 50,
+      "name": "emptyDrinkCarton",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 51,
+      "name": "emptyJuiceCup",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 52,
+      "name": "roastSausage",
+      "cost": 5,
+      "values": {
+        "base": 16,
+        "hot": 16,
+        "cold": 20
+      },
+      "defaultPrice": 15,
+      "isFood": true,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 53,
+      "name": "emptyBowlBlue",
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": true
+    },
+    {
+      "id": 54,
+      "name": null,
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    },
+    {
+      "id": 55,
+      "name": null,
+      "cost": 0,
+      "values": {
+        "base": 0,
+        "hot": 0,
+        "cold": 0
+      },
+      "defaultPrice": 0,
+      "isFood": false,
+      "isDrink": false,
+      "isSouvenir": false,
+      "isPhoto": false,
+      "isContainer": false
+    }
+  ],
+  "rideTypes": [
+    {
+      "id": 0,
+      "name": "spiral_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 1,
+      "name": "stand_up_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 2,
+      "name": "suspended_swinging_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 3,
+      "name": "inverted_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 4,
+      "name": "junior_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 5,
+      "name": "miniature_railway",
+      "photoItem": 3,
+      "category": "transport",
+      "specialType": null
+    },
+    {
+      "id": 6,
+      "name": "monorail",
+      "photoItem": 3,
+      "category": "transport",
+      "specialType": null
+    },
+    {
+      "id": 7,
+      "name": "mini_suspended_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 8,
+      "name": "boat_hire",
+      "photoItem": 3,
+      "category": "water",
+      "specialType": "boatHire"
+    },
+    {
+      "id": 9,
+      "name": "wooden_wild_mouse",
+      "photoItem": 33,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 10,
+      "name": "steeplechase",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 11,
+      "name": "car_ride",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 12,
+      "name": "launched_freefall",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 13,
+      "name": "bobsleigh_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 14,
+      "name": "observation_tower",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 15,
+      "name": "looping_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 16,
+      "name": "dinghy_slide",
+      "photoItem": 34,
+      "category": "water",
+      "specialType": null
+    },
+    {
+      "id": 17,
+      "name": "mine_train_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 18,
+      "name": "chairlift",
+      "photoItem": 3,
+      "category": "transport",
+      "specialType": null
+    },
+    {
+      "id": 19,
+      "name": "corkscrew_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 20,
+      "name": "maze",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": "maze"
+    },
+    {
+      "id": 21,
+      "name": "spiral_slide",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": "spiralSlide"
+    },
+    {
+      "id": 22,
+      "name": "go_karts",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 23,
+      "name": "log_flume",
+      "photoItem": 34,
+      "category": "water",
+      "specialType": null
+    },
+    {
+      "id": 24,
+      "name": "river_rapids",
+      "photoItem": 34,
+      "category": "water",
+      "specialType": null
+    },
+    {
+      "id": 25,
+      "name": "dodgems",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 26,
+      "name": "swinging_ship",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 27,
+      "name": "swinging_inverter_ship",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 28,
+      "name": "food_stall",
+      "photoItem": 3,
+      "category": "shop",
+      "specialType": null
+    },
+    {
+      "id": 29,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 30,
+      "name": "drink_stall",
+      "photoItem": 3,
+      "category": "shop",
+      "specialType": null
+    },
+    {
+      "id": 31,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 32,
+      "name": "shop",
+      "photoItem": 3,
+      "category": "shop",
+      "specialType": null
+    },
+    {
+      "id": 33,
+      "name": "merry_go_round",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 34,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 35,
+      "name": "information_kiosk",
+      "photoItem": 3,
+      "category": "shop",
+      "specialType": null
+    },
+    {
+      "id": 36,
+      "name": "toilets",
+      "photoItem": 3,
+      "category": "shop",
+      "specialType": "toilet"
+    },
+    {
+      "id": 37,
+      "name": "ferris_wheel",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 38,
+      "name": "motion_simulator",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": "motionSimulator"
+    },
+    {
+      "id": 39,
+      "name": "3d_cinema",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 40,
+      "name": "top_spin",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 41,
+      "name": "space_rings",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": "spaceRings"
+    },
+    {
+      "id": 42,
+      "name": "reverse_freefall_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 43,
+      "name": "lift",
+      "photoItem": 3,
+      "category": "transport",
+      "specialType": null
+    },
+    {
+      "id": 44,
+      "name": "vertical_drop_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 45,
+      "name": "cash_machine",
+      "photoItem": 3,
+      "category": "shop",
+      "specialType": "cashMachine"
+    },
+    {
+      "id": 46,
+      "name": "twist",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 47,
+      "name": "haunted_house",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 48,
+      "name": "first_aid",
+      "photoItem": 3,
+      "category": "shop",
+      "specialType": "firstAid"
+    },
+    {
+      "id": 49,
+      "name": "circus",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 50,
+      "name": "ghost_train",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 51,
+      "name": "twister_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 52,
+      "name": "wooden_rc",
+      "photoItem": 33,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 53,
+      "name": "side_friction_rc",
+      "photoItem": 33,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 54,
+      "name": "steel_wild_mouse",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 55,
+      "name": "multi_dimension_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 56,
+      "name": "multi_dimension_rc_alt",
+      "photoItem": 32,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 57,
+      "name": "flying_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 58,
+      "name": "flying_rc_alt",
+      "photoItem": 32,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 59,
+      "name": "virginia_reel",
+      "photoItem": 33,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 60,
+      "name": "splash_boats",
+      "photoItem": 34,
+      "category": "water",
+      "specialType": null
+    },
+    {
+      "id": 61,
+      "name": "mini_helicopters",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 62,
+      "name": "lay_down_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 63,
+      "name": "suspended_monorail",
+      "photoItem": 3,
+      "category": "transport",
+      "specialType": null
+    },
+    {
+      "id": 64,
+      "name": "lay_down_rc_alt",
+      "photoItem": 32,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 65,
+      "name": "reverser_rc",
+      "photoItem": 33,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 66,
+      "name": "heartline_twister_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 67,
+      "name": "mini_golf",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": "miniGolf"
+    },
+    {
+      "id": 68,
+      "name": "giga_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 69,
+      "name": "roto_drop",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 70,
+      "name": "flying_saucers",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 71,
+      "name": "crooked_house",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 72,
+      "name": "monorail_cycles",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 73,
+      "name": "compact_inverted_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 74,
+      "name": "water_coaster",
+      "photoItem": 34,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 75,
+      "name": "air_powered_vertical_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 76,
+      "name": "inverted_hairpin_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 77,
+      "name": "magic_carpet",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": null
+    },
+    {
+      "id": 78,
+      "name": "submarine_ride",
+      "photoItem": 3,
+      "category": "water",
+      "specialType": null
+    },
+    {
+      "id": 79,
+      "name": "river_rafts",
+      "photoItem": 34,
+      "category": "water",
+      "specialType": null
+    },
+    {
+      "id": 80,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 81,
+      "name": "enterprise",
+      "photoItem": 3,
+      "category": "thrill",
+      "specialType": "enterprise"
+    },
+    {
+      "id": 82,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 83,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 84,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 85,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 86,
+      "name": "inverted_impulse_rc",
+      "photoItem": 32,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 87,
+      "name": "mini_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 88,
+      "name": "mine_ride",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 89,
+      "name": "invalid",
+      "photoItem": 3,
+      "category": "none",
+      "specialType": null
+    },
+    {
+      "id": 90,
+      "name": "lim_launched_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 91,
+      "name": "hypercoaster",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 92,
+      "name": "hyper_twister",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 93,
+      "name": "monster_trucks",
+      "photoItem": 3,
+      "category": "gentle",
+      "specialType": null
+    },
+    {
+      "id": 94,
+      "name": "spinning_wild_mouse",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 95,
+      "name": "classic_mini_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 96,
+      "name": "hybrid_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 97,
+      "name": "single_rail_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 98,
+      "name": "alpine_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 99,
+      "name": "classic_wooden_rc",
+      "photoItem": 33,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 100,
+      "name": "classic_stand_up_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 101,
+      "name": "lsm_rc",
+      "photoItem": 3,
+      "category": "rollerCoaster",
+      "specialType": null
+    },
+    {
+      "id": 102,
+      "name": "classic_wooden_twister_rc",
+      "photoItem": 33,
+      "category": "rollerCoaster",
+      "specialType": null
+    }
+  ],
+  "constants": {
+    "noneItem": 255,
+    "photoFlag": 32,
+    "maxRidePrice": 200,
+    "maxEntranceFee": 9990,
+    "precipitationTypes": [
+      "rain",
+      "heavyRain",
+      "thunder",
+      "heavySnow",
+      "blizzard"
+    ]
+  }
+}
