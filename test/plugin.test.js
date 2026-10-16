@@ -71,6 +71,8 @@ test('coaster construction chains returned ride ID through all 12 pieces',()=>{
     assert.equal(h.calls.length,15);assert.equal(h.calls[0].action,'ridecreate');
     for(const call of h.calls.slice(1))assert.equal(call.args.ride,12);
     assert.equal(h.calls.at(-1).action,'ridesetstatus');assert.equal(h.sent.at(-1).result.state,'completed');
+    assert.ok(h.sent.at(-1).result.postBuildReview);assert.equal(h.sent.at(-1).result.postBuildReview.design.status,'unknown');
+    assert.match(h.sent.at(-1).result.postBuildReview.message,/Incomplete or pending evidence is not a pass/);
 });
 test('blocked construction stops at rejected piece with recoverable ride ID',()=>{
     const h=harness({rejectQuery:4});h.arm();const plan=h.request('track.plan',require('../examples/custom-coaster-plan.json').args).reply;

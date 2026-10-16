@@ -128,6 +128,25 @@
     "y": "number",
     "z": "number"
   },
+  "bannerplace": {
+    "x": "number",
+    "y": "number",
+    "z": "number",
+    "direction": "number",
+    "object": "number",
+    "primaryColour": "number"
+  },
+  "bannersetstyle": {
+    "id": "number",
+    "type": "number",
+    "parameter": "number"
+  },
+  "bannerremove": {
+    "x": "number",
+    "y": "number",
+    "z": "number",
+    "direction": "number"
+  },
   "staffhire": {
     "autoPosition": "boolean",
     "staffType": "number",

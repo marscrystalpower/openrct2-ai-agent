@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "sourceCommit": "82b309798a83346b7f9fc61a53847f4323deb19d",
+  "source": "OpenRCT2 0.5.6 distributed standard object JSON metadata; properties only, no graphics or translations",
+  "classificationSource": "standard-object-reference-identifiers",
+  "flags": {
+    "isBin": 1,
+    "isBench": 2,
+    "breakable": 4,
+    "lamp": 8,
+    "jumpingFountainWater": 16,
+    "jumpingFountainSnow": 32,
+    "dontAllowOnQueue": 64,
+    "dontAllowOnSlope": 128,
+    "isQueueScreen": 256
+  },
+  "objects": [
+    {
+      "identifier": "rct2.footpath_item.bench1",
+      "flags": 198,
+      "drawType": 2,
+      "referenceSha256": "56c5ee2702bcfc31c49ac185d0d49ed4880263c6d92877e624e436ae4e5aead2"
+    },
+    {
+      "identifier": "rct2.footpath_item.benchlog",
+      "flags": 198,
+      "drawType": 2,
+      "referenceSha256": "37aa856251e7e173b0a334db8f7d64d210437cdd5e791b5a5604319e116cf9a0"
+    },
+    {
+      "identifier": "rct2.footpath_item.benchpl",
+      "flags": 198,
+      "drawType": 2,
+      "referenceSha256": "0203da8ce917170d1de448982dfb224e91c731a9a5913ef744af330fff109f69"
+    },
+    {
+      "identifier": "rct2.footpath_item.benchspc",
+      "flags": 198,
+      "drawType": 2,
+      "referenceSha256": "f1b6c14b51ecfc00d3e2b4c12ea3e69d10617c2bf97d91b27dddb4daa8abbd48"
+    },
+    {
+      "identifier": "rct2.footpath_item.benchstn",
+      "flags": 198,
+      "drawType": 2,
+      "referenceSha256": "3721252ed256dea33d0f01455b23181eeabe08304b6d6260d29ef1603b162ced"
+    },
+    {
+      "identifier": "rct2.footpath_item.jumpfnt1",
+      "flags": 208,
+      "drawType": 3,
+      "referenceSha256": "cd50dfc3658321a3548f28902fd10dcbfa4c62875beb99cfb10aeda8a18397cd"
+    },
+    {
+      "identifier": "rct2.footpath_item.jumpsnw1",
+      "flags": 224,
+      "drawType": 3,
+      "referenceSha256": "aeab314ee3bc2dec28a917e919ef122068d4068cf93fa447b0ef57b814c3ea49"
+    },
+    {
+      "identifier": "rct2.footpath_item.lamp1",
+      "flags": 12,
+      "drawType": 0,
+      "referenceSha256": "47eccb3d3b5809f7ec08279203d9c76172d8e4f5ff26d2982ffc83ee68b1194f"
+    },
+    {
+      "identifier": "rct2.footpath_item.lamp2",
+      "flags": 12,
+      "drawType": 0,
+      "referenceSha256": "31badc4006096ff4099108dc2854b0f1b500dd529d58df5a5f6a46f407dff49f"
+    },
+    {
+      "identifier": "rct2.footpath_item.lamp3",
+      "flags": 12,
+      "drawType": 0,
+      "referenceSha256": "a994f40a2f5382e3b6231d4ad3f8ac282a2736cbbeeae9363a8394eae9ec39aa"
+    },
+    {
+      "identifier": "rct2.footpath_item.lamp4",
+      "flags": 12,
+      "drawType": 0,
+      "referenceSha256": "5dd4a74e0f478648a42dcaf016acb99f4043cdc62d5c3092205636af51ec7f24"
+    },
+    {
+      "identifier": "rct2.footpath_item.lampdsy",
+      "flags": 12,
+      "drawType": 0,
+      "referenceSha256": "e6e7893e2628d9acb8e667407c64384496451fac1ce83febb22ef358f7a20a03"
+    },
+    {
+      "identifier": "rct2.footpath_item.lamppir",
+      "flags": 12,
+      "drawType": 0,
+      "referenceSha256": "a92c8235f9256ddce58d603ee5ba55d83b99467f4e9e92320433dd7cc53ef76a"
+    },
+    {
+      "identifier": "rct2.footpath_item.litter1",
+      "flags": 69,
+      "drawType": 1,
+      "referenceSha256": "3a1153e0a7f3892cf35fbcda4604ca00ec5e6fcd6f3d1656adf9cfbfecd3467a"
+    },
+    {
+      "identifier": "rct2.footpath_item.littermn",
+      "flags": 69,
+      "drawType": 1,
+      "referenceSha256": "735be1bdc13df47cb1abe1eaea5a02a7a24e9379a0ae5c5de36e804564e1af5f"
+    },
+    {
+      "identifier": "rct2.footpath_item.littersp",
+      "flags": 69,
+      "drawType": 1,
+      "referenceSha256": "a0b4143f1d492cb1de113398e5d97c30a89e5d0a6011bd5f4cc0d96c40fc2525"
+    },
+    {
+      "identifier": "rct2.footpath_item.litterww",
+      "flags": 69,
+      "drawType": 1,
+      "referenceSha256": "a96dc32420a360acc2edb34091659cbafee978e050d77dc79b629a7b4cb7b186"
+    },
+    {
+      "identifier": "rct2.footpath_item.qtv1",
+      "flags": 256,
+      "drawType": 0,
+      "referenceSha256": "3fb22187fc25048d00447a3cf3f13b65215f7b1563edc5d395b51ec3ab05260d"
+    },
+    {
+      "identifier": "rct2tt.footpath_item.firhydrt",
+      "flags": 12,
+      "drawType": 0,
+      "referenceSha256": "3a1bcb416cf8de8d5dd2baf6000536018251a4e1a51dc77347fcf4b0928f9d4a"
+    },
+    {
+      "identifier": "rct2tt.footpath_item.medbench",
+      "flags": 198,
+      "drawType": 2,
+      "referenceSha256": "7a06ed741aaa555a6e84ccaa26da086a2055cd33ae878b8163695d5024b875f8"
+    }
+  ],
+  "limitations": [
+    "API 124 does not expose loaded path-addition flags. Standard identifiers are classified using the included reference metadata; custom or overridden objects require separate metadata verification. No graphics or game assets are included."
+  ]
+}

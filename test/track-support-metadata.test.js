@@ -56,6 +56,24 @@ test('ride flags expand common coaster masks and preserve special ride types', (
     assert.deepEqual(data.rideTypes[29].regular.enabledGroups, []);
 });
 
+test('native operating modes distinguish block-capable and non-block ride types', () => {
+    assert.equal(data.rideModes.continuousCircuit, 1);
+    assert.equal(data.rideModes.continuousCircuitBlockSectioned, 34);
+    assert.equal(data.rideModes.poweredLaunchBlockSectioned, 36);
+    assert.deepEqual(data.rideTypes[52].rideModes, [1, 34, 2]);
+    assert(!data.rideTypes[9].rideModes.includes(34)); // Wooden Wild Mouse
+    assert(!data.rideTypes[9].rideModes.includes(36));
+    for (const ride of data.rideTypes) assert(ride.rideModes.every(mode => mode >= 0 && mode < data.rideModes.count));
+    assert.equal(segment('bankedRightQuarterTurn5Tiles').flags.isBankedTurn, true);
+    assert.equal(segment('rightBank').flags.isBankedTurn, false);
+});
+
+test('unknown operating-mode syntax is rejected before publication', t => {
+    const changed=alteredRead(t, 'src/openrct2/ride/rtd/coaster/WoodenRollerCoaster.h', text => text.replace('RideMode::continuousCircuitBlockSectioned', 'RideMode::unreviewedMode'));
+    assert.throws(() => generateTrackSupport(source), /unknown RideMode/);
+    changed();
+});
+
 test('normal, covered and inverted groups remain separate and exclude cheats', () => {
     const looping = data.rideTypes[15];
     assert(looping.regular.enabledGroups.includes(group('verticalLoop')));

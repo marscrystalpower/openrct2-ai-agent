@@ -3,6 +3,7 @@
 const net=require('node:net'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {parseDisplaySettings}=require('./scripts/display-settings');
 const {compareBridgeIdentity,generateBridgeManifest,SOURCE_FILES}=require('./scripts/source-manifest');
+const {summarize:summarizeAccess,forRide:accessForRide}=require('./src/access-monitor');
 const root=__dirname;
 const mutations=new Set(['action.execute','batch.execute','track.build','coaster.build','save']);
 function rpc(config,req,timeout=120000){
@@ -58,6 +59,20 @@ function decorateReply(reply,config,directory=root){
     }
     return reply;
 }
+async function completeAccess(reply,config,request=rpc){
+    if(!reply.ok||!reply.result)return reply;
+    const result=reply.result;
+    const checking=Array.isArray(result)?result.some(ride=>ride.access&&ride.access.status==='checking'):result.access&&result.access.status==='checking';
+    if(!checking)return reply;
+    // A normal overview waits for the bounded audit. No map coordinates,
+    // screenshot, guest survey or extra agent-side diagnostic pass is needed.
+    const audit=await request(config,{id:crypto.randomUUID(),op:'path.access',args:{}});
+    if(!audit.ok)throw Error('Automatic access audit: '+audit.error);
+    if(Array.isArray(result))result.forEach(ride=>{ride.access=accessForRide(audit.result,ride.id);});
+    else if(result.inspection!==undefined&&result.id!==undefined)result.access=accessForRide(audit.result,result.id);
+    else result.access=summarizeAccess(audit.result);
+    return reply;
+}
 async function main(argv){
     const config=JSON.parse(fs.readFileSync(path.join(root,'bridge.config.json'),'utf8'));
     if(config.host!=='127.0.0.1')throw Error('Only localhost is supported');
@@ -93,7 +108,7 @@ async function main(argv){
         durableJson(path.join(root,'logs',req.id+'.request.json'),req);
         console.error('Request ID: '+req.id+' (recover with: node cli.js receipt '+req.id+')');
     }
-    const reply=decorateReply(await rpc(config,req),config);
+    const reply=await completeAccess(decorateReply(await rpc(config,req),config),config);
     if(reply.ok && ['save','capture'].includes(req.op) && reply.result.filename){
         const filename=reply.result.filename;
         if(path.basename(filename)!==filename)throw Error('Unsafe artifact filename in response');
@@ -112,4 +127,4 @@ async function main(argv){
     if(!reply.ok || (reply.result && ['partial','stopped','outcome_unknown','started'].includes(reply.result.state)))process.exitCode=1;
 }
 if(require.main===module)main(process.argv.slice(2)).catch(e=>{console.error(e.message);process.exitCode=1;});
-module.exports={rpc,durableJson,profileRoot,decorateReply,requireIdentity};
+module.exports={rpc,durableJson,profileRoot,decorateReply,requireIdentity,completeAccess};

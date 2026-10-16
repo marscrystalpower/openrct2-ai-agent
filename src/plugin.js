@@ -4,19 +4,59 @@
     function main() {
         var C=BridgeCore, money=BridgeMoney.create(context), trackGuard=BridgeTrackGuard.create(BridgeCore,TRACK_SUPPORT,context,objectManager), armed=false, busy=false, generation=0, plans=Object.create(null), clients=[];
         var session=newSession();
+        var furnitureOptions={objectManager:objectManager,metadata:FURNITURE_SUPPORT};
+        var access=BridgeAccessMonitor.create(context,map,ACCESS_SUPPORT,BridgeAccessInspector,{furniture:furnitureOptions,pricingSupport:PRICING_SUPPORT,canRead:function(){return network.mode==='none';}});
+        var designCache=Object.create(null);
         var storageKey='agent-bridge.receipts.v1';
         var receipts=context.sharedStorage.get(storageKey) || {};
         function newSession(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);}
-        function invalidate(){armed=false;generation++;session=newSession();plans=Object.create(null);}
+        function refreshAccess(reason){designCache=Object.create(null);access.invalidate(reason);if(context.apiVersion===BRIDGE_INFO.api && network.mode==='none' && (context.mode==='normal'||context.mode==='track_designer'))access.overview();}
+        function invalidate(){armed=false;generation++;session=newSession();plans=Object.create(null);refreshAccess('park changed');}
         context.subscribe('map.change',invalidate);
         context.subscribe('map.changed',invalidate);
+        context.subscribe('map.resize',function(){refreshAccess('map resized');});
+        context.subscribe('action.execute',function(event){if(!event || !event.result || !event.result.error)refreshAccess('native action executed');});
         function persist(){context.sharedStorage.set(storageKey,receipts);}
         function error(message){throw new Error(message);}
         function playable(){if(context.mode!=='normal' && context.mode!=='track_designer') error('Load a park first'); if(network.mode!=='none') error('Bridge supports single-player only');}
         function allowed(req){playable();if(!armed) error('Bridge is read-only; arm this session first');if(req.session!==session) error('Stale or missing session');}
         function compatible(){if(context.apiVersion!==BRIDGE_INFO.api)error('Bridge requires OpenRCT2 v'+BRIDGE_INFO.openrct2+' / API '+BRIDGE_INFO.api+'; API version is '+context.apiVersion);}
         function pick(obj,keys){var result={};keys.forEach(function(k){try{if(obj[k]!==undefined){var v=obj[k];result[k]=(typeof v==='number' && !Number.isFinite(v)) || (typeof v==='number' && Math.abs(v)>Number.MAX_SAFE_INTEGER)?null:v;}}catch(e){result[k]=null;}});return result;}
-        function rideView(r){var result=pick(r,['id','type','name','classification','status','mode','price','excitement','intensity','nausea','vehicles','reliability','downtime','guestCount','incomePerHour','profit','totalCustomers','maxSpeed','averageSpeed','rideTime','rideLength','maxPositiveVerticalGs','maxNegativeVerticalGs','maxLateralGs','totalAirTime','numDrops','numLiftHills','colourSchemes','vehicleColours']);result.stations=(r.stations||[]).map(function(s,i){return Object.assign({index:i},pick(s,['start','length','entrance','exit','queueTime']));}).filter(function(s){return s.length>0;});return result;}
+        function unknownDesign(reason){return {status:'unknown',complete:false,truncated:true,observations:[],unavailable:[reason],track:{segmentsChecked:0,counts:null},detailsOperation:'ride'};}
+        function designReview(r,budget){
+            if(context.apiVersion!==BRIDGE_INFO.api)return unknownDesign('Ride review requires the pinned scripting API');
+            var now=Date.now(),cached=designCache[r.id],limit=Math.min(4096,budget.remaining);
+            var signature=JSON.stringify([r.type,r.status,r.mode,r.rideTime,r.flags,r.vehicles,r.liftHillSpeed]);
+            if(cached && cached.signature===signature && now-cached.at>=0 && now-cached.at<2000 && (cached.report.complete || cached.limit>=limit))return cached.report;
+            if(limit<1)return unknownDesign('Shared overview track inspection budget exhausted; inspect this ride individually');
+            var report=BridgeRideAuditor.inspect(r,map,context,TRACK_SUPPORT,{maxSegments:limit});
+            budget.remaining-=Math.max(1,report.track.segmentsChecked||0);
+            // Bound cache entries even in parks with unusually many rides.
+            if(Object.keys(designCache).length>=256)designCache=Object.create(null);
+            designCache[r.id]={signature:signature,at:now,limit:limit,report:report};return report;
+        }
+        function pricingReview(r,design){
+            if(context.apiVersion!==BRIDGE_INFO.api)return {status:'unknown',items:[],warnings:[],unavailable:['Pricing review requires the pinned scripting API'],profitOptimum:null};
+            var options={park:park};
+            if(design && design.complete && design.track.counts)options.hasPhoto=design.track.counts.photo>0;
+            try{if(typeof climate!=='undefined')options.weather=climate.current;}catch(e){}
+            return BridgePricingInspector.inspect(r,PRICING_SUPPORT,options);
+        }
+        function parkPricingReview(){return context.apiVersion===BRIDGE_INFO.api?BridgePricingInspector.inspectPark(park,PRICING_SUPPORT):{status:'unknown',warnings:[],unavailable:['Pricing review requires the pinned scripting API'],profitOptimum:null};}
+        function parkRideReview(){
+            var rides=map.rides,budget={remaining:16384},observations=[],reports=[],complete=true,omitted=0;
+            for(var i=0;i<rides.length && i<256;i++){
+                var r=rides[i],design=designReview(r,budget),pricing=pricingReview(r,design);
+                if(!design.complete || design.truncated || pricing.status==='unknown')complete=false;
+                reports.push({id:r.id,name:r.name,designStatus:design.status,designComplete:design.complete,designObservations:design.observations,pricing:pricing});
+                design.observations.concat(pricing.warnings).forEach(function(o){if(observations.length<128)observations.push(Object.assign({ride:r.id,name:r.name},o));else omitted++;});
+            }
+            if(rides.length>256)complete=false;
+            return {status:!complete?'unknown':observations.length?'review':'ok',complete:complete,rides:reports,totalRides:rides.length,
+                ridesOmitted:Math.max(0,rides.length-256),observations:observations,observationsOmitted:omitted,
+                limits:{maxRides:256,maxSegmentsPerRide:4096,maxUncachedSegments:16384},detailsOperation:'ride'};
+        }
+        function rideView(r,budget){var result=pick(r,['id','type','name','classification','status','mode','price','excitement','intensity','nausea','vehicles','reliability','downtime','guestCount','incomePerHour','profit','totalCustomers','maxSpeed','averageSpeed','rideTime','rideLength','maxPositiveVerticalGs','maxNegativeVerticalGs','maxLateralGs','totalAirTime','numDrops','numLiftHills','colourSchemes','vehicleColours']);result.stations=(r.stations||[]).map(function(s,i){return Object.assign({index:i},pick(s,['start','length','entrance','exit','queueTime']));}).filter(function(s){return s.length>0;});result.access=access.ride(r.id);result.design=designReview(r,budget||{remaining:4096});result.pricing=pricingReview(r,result.design);return result;}
         function getRide(id){C.integer(id,'ride',0,65534);var r=map.getRide(id);if(!r)error('Ride does not exist');return r;}
         function rideResearchStatus(index){
             // API 124 reads the native invention bitmap. Research lists can contain
@@ -81,6 +121,7 @@
                 if(args.type===2 && getRide(args.ride).type===20)C.integer(args.value,'maze wall style',0,3);
                 else if(args.type<=5)colour(args.value,'ride appearance');
             } else if(action==='staffsetcolour')colour(args.colour,'staff');
+            else if(action==='bannerplace')colour(args.primaryColour,'banner primary');
             else if(action==='smallsceneryplace'||action==='wallplace'){
                 ['primaryColour','secondaryColour','tertiaryColour'].forEach(function(k){colour(args[k],k);});
             } else if(action==='surfacesetstyle'){
@@ -94,6 +135,19 @@
             var object=objectManager.getObject(type,index);
             if(!object || object.index!==index || object.type!==type)error('Path object '+index+' is not loaded as '+type+'; inspect objects for that family and match constructFlags before retrying');
             return object;
+        }
+        function validateBannerConstruction(action,args){
+            if(action!=='bannerplace'&&action!=='bannerremove'&&action!=='bannersetstyle')return;
+            C.validateAction(action,args,ACTION_SCHEMAS);
+            if(action==='bannersetstyle')return; // Native query resolves ID and land ownership.
+            C.integer(args.x,'banner world x',0,map.size.x*32-32);
+            C.integer(args.y,'banner world y',0,map.size.y*32-32);
+            if(action==='bannerplace'){
+                var object=objectManager.getObject('banner',args.object);
+                if(!object||object.index!==args.object||object.type!=='banner')error('Banner object '+args.object+' is not loaded as banner; inspect objects for that family before construction');
+            }
+            // The native action checks actual path/edge, ownership,
+            // duplicate banners and banner limits. Never bypass its query.
         }
         function pathSurfaceIsQueue(object){
             // FootpathEntry.h: surface flags use bit 3, not the action's bit 0.
@@ -119,7 +173,7 @@
                 if(isQueue!==((args.constructFlags&1)!==0))error('Path queue flag does not match footpath_surface '+args.object+'; use a queue surface with constructFlags 1 or a regular surface with constructFlags 0');
             }
         }
-        function segmentView(s){return Object.assign(pick(s,['type','description','beginZ','endZ','endX','endY','beginDirection','endDirection','beginSlope','endSlope','beginBank','endBank','length','elements','trackGroup','allowsChainLift','isSteepUp','isInversion','isBanked','mirrorSegment']),{name:reverseNames[s.type],requiresChainLift:!!(TRACK_SUPPORT.segments[s.type] && TRACK_SUPPORT.segments[s.type].forceChain)});}
+        function segmentView(s){return Object.assign(pick(s,['type','description','beginZ','endZ','endX','endY','beginDirection','endDirection','beginSlope','endSlope','beginBank','endBank','length','elements','trackGroup','allowsChainLift','isSteepUp','isInversion','isBanked','isBankedTurn','mirrorSegment']),{name:reverseNames[s.type],requiresChainLift:!!(TRACK_SUPPORT.segments[s.type] && TRACK_SUPPORT.segments[s.type].forceChain)});}
         var reverseNames={};Object.keys(TRACK_NAMES).forEach(function(k){reverseNames[TRACK_NAMES[k]]=k;});
         function walk(args){
             C.integer(args.x,'tile x',0,map.size.x-1);C.integer(args.y,'tile y',0,map.size.y-1);C.integer(args.elementIndex,'elementIndex',0,255);
@@ -142,7 +196,16 @@
             return {x:x,y:y,elements:t.elements.map(function(el,index){
                 var result=Object.assign({elementIndex:index},pick(el,['type','baseZ','clearanceZ','slope','waterHeight','ownership','surfaceStyle','edgeStyle','direction','ride','station','trackType','sequence','hasChainLift','isInverted','edges','isQueue','isWide','queueBannerDirection','object','quadrant']));
                 if(['small_scenery','large_scenery','wall'].indexOf(el.type)>=0)Object.assign(result,pick(el,['primaryColour','secondaryColour','tertiaryColour']));
-                if(el.type==='footpath')Object.assign(result,pick(el,['surfaceObject','railingsObject']));
+                Object.assign(result,pick(el,['isGhost','isHidden','occupiedQuadrants']));
+                if(el.type==='footpath')Object.assign(result,pick(el,['surfaceObject','railingsObject','slopeDirection','isBlockedByVehicle','addition','additionStatus','isAdditionBroken','isAdditionFull','isAdditionGhost']));
+                if(el.type==='banner'){
+                    Object.assign(result,pick(el,['isNoEntry','bannerIndex']));
+                    // API 124 exposes the display flag but not the banner's
+                    // native allowed-edge mask. Never invent that mask from
+                    // isNoEntry: direct setters can leave these inconsistent.
+                    result.allowedEdges=null;
+                    result.allowedEdgesUnavailable='API 124 does not expose this mask; use path.inspect native.permittedEdges and connectedPaths to verify traversal';
+                }
                 if(el.type==='track'){
                     var ride=map.getRide(el.ride);
                     if(ride && ride.type===20){
@@ -156,7 +219,7 @@
         function inspect(req){
             var a=req.args||{};
             switch(req.op){
-            case 'hello':return {bridgeVersion:BRIDGE_INFO.version,bridgeSourceHash:BRIDGE_INFO.bridgeManifest.sourceHash,bridgeManifest:BRIDGE_INFO.bridgeManifest,openrct2:BRIDGE_INFO.openrct2,engineSourceCommit:BRIDGE_INFO.sourceCommit,sourceCommit:BRIDGE_INFO.sourceCommit,targetApiVersion:BRIDGE_INFO.api,apiVersion:context.apiVersion,compatible:context.apiVersion===BRIDGE_INFO.api,currency:money.info(),session:session,armed:armed,busy:busy,mode:context.mode,network:network.mode,operations:['hello','arm','stop','receipt','park','rides','ride','map','guests','staff','objects','actions','colours','capture','save','track.catalog','track.plan','track.walk','action.query','action.execute','batch.execute','track.build','coaster.build']};
+            case 'hello':return {bridgeVersion:BRIDGE_INFO.version,bridgeSourceHash:BRIDGE_INFO.bridgeManifest.sourceHash,bridgeManifest:BRIDGE_INFO.bridgeManifest,openrct2:BRIDGE_INFO.openrct2,engineSourceCommit:BRIDGE_INFO.sourceCommit,sourceCommit:BRIDGE_INFO.sourceCommit,targetApiVersion:BRIDGE_INFO.api,apiVersion:context.apiVersion,compatible:context.apiVersion===BRIDGE_INFO.api,currency:money.info(),session:session,armed:armed,busy:busy,mode:context.mode,network:network.mode,operations:['hello','arm','stop','receipt','park','rides','ride','map','path.inspect','path.route','path.access','guests','staff','objects','actions','colours','capture','save','track.catalog','track.plan','track.walk','action.query','action.execute','batch.execute','track.build','coaster.build']};
             case 'actions':return ACTION_SCHEMAS;
             case 'colours':return COLOUR_PALETTE;
             case 'receipt':if(typeof a.id!=='string')error('receipt id required');return Object.prototype.hasOwnProperty.call(receipts,a.id)?receipts[a.id]:null;
@@ -169,9 +232,11 @@
                 var capture={filename:'agent-'+newSession()+'.png',width:C.integer(a.width===undefined?1600:a.width,'width',320,2560),height:C.integer(a.height===undefined?1000:a.height,'height',240,1600),zoom:C.integer(a.zoom===undefined?1:a.zoom,'zoom',0,3),rotation:C.integer(a.rotation===undefined?0:a.rotation,'rotation',0,3),position:{x:C.integer(a.x===undefined?map.size.x*16:a.x,'world x',0,map.size.x*32-1),y:C.integer(a.y===undefined?map.size.y*16:a.y,'world y',0,map.size.y*32-1)}};
                 context.captureImage(capture);return {filename:capture.filename,directory:'user-data/screenshot',options:capture};
             }
-            case 'park':return {session:session,paused:context.paused,speed:context.gameSpeed,mapSize:map.size,park:Object.assign(pick(park,['name','cash','rating','bankLoan','maxBankLoan','entranceFee','guests','value','companyValue','suggestedGuestMaximum']),{messages:(park.messages||[]).map(function(m){return pick(m,['type','subject','text','month','tickCount','isArchived']);})}),scenario:Object.assign(pick(scenario,['name','status']),{objective:pick(scenario.objective||{},['type','guests','year','length','excitement','parkValue','monthlyIncome'])}),date:pick(date,['monthsElapsed','month','day'])};
-            case 'rides':return map.rides.map(rideView);
-            case 'ride':{var inspectedRide=getRide(a.ride);return Object.assign(rideView(inspectedRide),{inspection:BridgeRideInspector.inspect(inspectedRide,map)});}
+            case 'park':return {session:session,paused:context.paused,speed:context.gameSpeed,mapSize:map.size,access:context.apiVersion===BRIDGE_INFO.api?access.overview():{status:'unknown',complete:false,unavailable:['Access audit requires the pinned scripting API']},rideReview:parkRideReview(),pricing:parkPricingReview(),park:Object.assign(pick(park,['name','cash','rating','bankLoan','maxBankLoan','entranceFee','guests','value','companyValue','suggestedGuestMaximum']),{messages:(park.messages||[]).map(function(m){return pick(m,['type','subject','text','month','tickCount','isArchived']);})}),scenario:Object.assign(pick(scenario,['name','status']),{objective:pick(scenario.objective||{},['type','guests','year','length','excitement','parkValue','monthlyIncome'])}),date:pick(date,['monthsElapsed','month','day'])};
+            case 'rides':{if(context.apiVersion===BRIDGE_INFO.api)access.overview();var reviewBudget={remaining:16384};return map.rides.map(function(r){return rideView(r,reviewBudget);});}
+            case 'ride':{var inspectedRide=getRide(a.ride);if(context.apiVersion===BRIDGE_INFO.api)access.overview();return Object.assign(rideView(inspectedRide),{inspection:BridgeRideInspector.inspect(inspectedRide,map)});}
+            case 'path.inspect':compatible();return BridgePathInspector.inspect(a,map,furnitureOptions);
+            case 'path.route':compatible();return BridgePathInspector.route(a,map);
             case 'map':{
                 var x=C.integer(a.x,'tile x',0,map.size.x-1), y=C.integer(a.y,'tile y',0,map.size.y-1);
                 var w=C.integer(a.width===undefined?1:a.width,'width',1,32), h=C.integer(a.height===undefined?1:a.height,'height',1,32);
@@ -183,9 +248,9 @@
                 return {total:entities.length,offset:offset,entities:entities.slice(offset,offset+limit).map(function(e){var result=pick(e,['id','name','x','y','z','state','happiness','hunger','thirst','nausea','energy','cash','staffType','staffOrders','currentRide']);if(req.op==='guests')result.thoughts=(e.thoughts||[]).map(function(t){return pick(t,['type','item','freshness','freshTimeout']);});return result;})};
             }
             case 'objects':{
-                var types=['ride','station','footpath','footpath_surface','footpath_railings','footpath_addition','small_scenery','large_scenery','wall','terrain_surface','terrain_edge'];
+                var types=['ride','station','footpath','footpath_surface','footpath_railings','footpath_addition','banner','small_scenery','large_scenery','wall','terrain_surface','terrain_edge'];
                 if(types.indexOf(a.type)<0)error('Supported object types: '+types.join(', '));
-                return objectManager.getAllObjects(a.type).map(function(o){var result=pick(o,['type','index','identifier','name','description','rideType','minCarsInTrain','maxCarsInTrain','carsPerFlatRide']);if(a.type==='ride')result.researched=rideResearchStatus(o.index);if(a.type==='footpath_surface'){Object.assign(result,pick(o,['flags']));result.isQueue=pathSurfaceIsQueue(o);}return result;});
+                return objectManager.getAllObjects(a.type).map(function(o){var result=pick(o,['type','index','identifier','name','description','rideType','minCarsInTrain','maxCarsInTrain','carsPerFlatRide']);if(a.type==='ride'){result.researched=rideResearchStatus(o.index);Object.assign(result,pick(o,['shopItem','shopItemSecondary']));}if(a.type==='footpath_surface'){Object.assign(result,pick(o,['flags']));result.isQueue=pathSurfaceIsQueue(o);}if(a.type==='footpath_addition'){var ref=FURNITURE_SUPPORT.objects.filter(function(item){return item.identifier===o.identifier;})[0];result.furniture=ref?{flags:ref.flags,drawType:ref.drawType,source:'standard-object-reference-identifiers'}:{flags:null,source:'unknown'};}return result;});
             }
             case 'track.catalog':{
                 var check=null;
@@ -219,6 +284,7 @@
             validateColourArguments(action,args);
             validateRideConstruction(action,args);
             validatePathConstruction(action,args);
+            validateBannerConstruction(action,args);
             validateTrackConstruction(action,args);
             if(action==='mazeplacetrack'||action==='mazesettrack'){
                 var mazeRide=getRide(args.ride);
@@ -276,7 +342,15 @@
             var g=generation, currentSession=session, index=0;
             var receipt={id:req.id,fingerprint:fingerprint,state:'started',session:session,op:req.op,completed:[],spent:0,ride:rideId,startedAt:Date.now()};
             receipts[req.id]=receipt;persist();busy=true;
-            function finish(state,detail){receipt.state=state;receipt.detail=detail;receipt.finishedAt=Date.now();busy=false;try{persist();}catch(e){receipt.persistenceError=String(e);}send({id:req.id,ok:true,result:receipt});}
+            function finish(state,detail){
+                receipt.state=state;receipt.detail=detail;receipt.finishedAt=Date.now();busy=false;
+                if(state==='completed' && req.op==='coaster.build' && Number.isInteger(rideId)){
+                    try{var built=getRide(rideId),design=designReview(built,{remaining:4096});receipt.postBuildReview={design:design,pricing:pricingReview(built,design),access:access.ride(rideId),furniture:access.overview().furniture,
+                        message:'Review design, pricing, working amenities, queues and the full tested fleet before opening. Incomplete or pending evidence is not a pass.'};}
+                    catch(reviewError){receipt.postBuildReview={status:'unknown',unavailable:[String(reviewError.message||reviewError)]};}
+                }
+                try{persist();}catch(e){receipt.persistenceError=String(e);}send({id:req.id,ok:true,result:receipt});
+            }
             function valid(){return armed && generation===g && session===currentSession && network.mode==='none' && (context.mode==='normal'||context.mode==='track_designer');}
             function next(){
                 try{
@@ -300,6 +374,7 @@
                             // never execute on a stale successful precheck.
                             validateRideConstruction(item.action,item.args);
                             validatePathConstruction(item.action,item.args);
+                            validateBannerConstruction(item.action,item.args);
                             validateTrackConstruction(item.action,item.args);
                             compatible();
                             validateColourArguments(item.action,item.args);
@@ -326,6 +401,7 @@
                 if(!req || req.token!==BRIDGE_CONFIG.token)error('Authentication failed');
                 if(typeof req.id!=='string'||!/^[-a-zA-Z0-9]{8,80}$/.test(req.id))error('id must be 8..80 letters/digits/hyphens');
                 if(mutations.indexOf(req.op)>=0){mutation(req,send);return;}
+                if(req.op==='path.access'){playable();compatible();access.wait(req.args,function(err,result){if(err)send({id:req.id,ok:false,error:String(err.message||err)});else send({id:req.id,ok:true,result:result});});return;}
                 if(req.op==='action.query'){playable();query(req.args.action,req.args.args,function(r){send({id:req.id,ok:true,result:r});});return;}
                 send({id:req.id,ok:true,result:inspect(req)});
             }catch(e){send({id:req&&req.id,ok:false,error:String(e.message||e)});}

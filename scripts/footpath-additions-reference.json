@@ -1,0 +1,202 @@
+{
+  "source": "OpenRCT2 0.5.6 distributed standard object JSON metadata; properties only, no graphics or translations",
+  "objects": [
+    {
+      "identifier": "rct2.footpath_item.bench1",
+      "referenceSha256": "56c5ee2702bcfc31c49ac185d0d49ed4880263c6d92877e624e436ae4e5aead2",
+      "properties": {
+        "isBench": true,
+        "isBreakable": true,
+        "renderAs": "bench"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.benchlog",
+      "referenceSha256": "37aa856251e7e173b0a334db8f7d64d210437cdd5e791b5a5604319e116cf9a0",
+      "properties": {
+        "isBench": true,
+        "isBreakable": true,
+        "renderAs": "bench"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.benchpl",
+      "referenceSha256": "0203da8ce917170d1de448982dfb224e91c731a9a5913ef744af330fff109f69",
+      "properties": {
+        "isBench": true,
+        "isBreakable": true,
+        "renderAs": "bench"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.benchspc",
+      "referenceSha256": "f1b6c14b51ecfc00d3e2b4c12ea3e69d10617c2bf97d91b27dddb4daa8abbd48",
+      "properties": {
+        "isBench": true,
+        "isBreakable": true,
+        "renderAs": "bench"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.benchstn",
+      "referenceSha256": "3721252ed256dea33d0f01455b23181eeabe08304b6d6260d29ef1603b162ced",
+      "properties": {
+        "isBench": true,
+        "isBreakable": true,
+        "renderAs": "bench"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.jumpfnt1",
+      "referenceSha256": "cd50dfc3658321a3548f28902fd10dcbfa4c62875beb99cfb10aeda8a18397cd",
+      "properties": {
+        "isJumpingFountainWater": true,
+        "renderAs": "fountain"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.jumpsnw1",
+      "referenceSha256": "aeab314ee3bc2dec28a917e919ef122068d4068cf93fa447b0ef57b814c3ea49",
+      "properties": {
+        "isJumpingFountainSnow": true,
+        "renderAs": "fountain"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.lamp1",
+      "referenceSha256": "47eccb3d3b5809f7ec08279203d9c76172d8e4f5ff26d2982ffc83ee68b1194f",
+      "properties": {
+        "isBreakable": true,
+        "isLamp": true,
+        "isAllowedOnQueue": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "lamp"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.lamp2",
+      "referenceSha256": "31badc4006096ff4099108dc2854b0f1b500dd529d58df5a5f6a46f407dff49f",
+      "properties": {
+        "isBreakable": true,
+        "isLamp": true,
+        "isAllowedOnQueue": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "lamp"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.lamp3",
+      "referenceSha256": "a994f40a2f5382e3b6231d4ad3f8ac282a2736cbbeeae9363a8394eae9ec39aa",
+      "properties": {
+        "isBreakable": true,
+        "isLamp": true,
+        "isAllowedOnQueue": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "lamp"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.lamp4",
+      "referenceSha256": "5dd4a74e0f478648a42dcaf016acb99f4043cdc62d5c3092205636af51ec7f24",
+      "properties": {
+        "isBreakable": true,
+        "isLamp": true,
+        "isAllowedOnQueue": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "lamp"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.lampdsy",
+      "referenceSha256": "e6e7893e2628d9acb8e667407c64384496451fac1ce83febb22ef358f7a20a03",
+      "properties": {
+        "isBreakable": true,
+        "isLamp": true,
+        "isAllowedOnQueue": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "lamp"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.lamppir",
+      "referenceSha256": "a92c8235f9256ddce58d603ee5ba55d83b99467f4e9e92320433dd7cc53ef76a",
+      "properties": {
+        "isBreakable": true,
+        "isLamp": true,
+        "isAllowedOnQueue": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "lamp"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.litter1",
+      "referenceSha256": "3a1153e0a7f3892cf35fbcda4604ca00ec5e6fcd6f3d1656adf9cfbfecd3467a",
+      "properties": {
+        "isBin": true,
+        "isBreakable": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "bin"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.littermn",
+      "referenceSha256": "735be1bdc13df47cb1abe1eaea5a02a7a24e9379a0ae5c5de36e804564e1af5f",
+      "properties": {
+        "isBin": true,
+        "isBreakable": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "bin"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.littersp",
+      "referenceSha256": "a0b4143f1d492cb1de113398e5d97c30a89e5d0a6011bd5f4cc0d96c40fc2525",
+      "properties": {
+        "isBin": true,
+        "isBreakable": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "bin"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.litterww",
+      "referenceSha256": "a96dc32420a360acc2edb34091659cbafee978e050d77dc79b629a7b4cb7b186",
+      "properties": {
+        "isBin": true,
+        "isBreakable": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "bin"
+      }
+    },
+    {
+      "identifier": "rct2.footpath_item.qtv1",
+      "referenceSha256": "3fb22187fc25048d00447a3cf3f13b65215f7b1563edc5d395b51ec3ab05260d",
+      "properties": {
+        "isAllowedOnQueue": true,
+        "isAllowedOnSlope": true,
+        "isTelevision": true,
+        "renderAs": "lamp"
+      }
+    },
+    {
+      "identifier": "rct2tt.footpath_item.firhydrt",
+      "referenceSha256": "3a1bcb416cf8de8d5dd2baf6000536018251a4e1a51dc77347fcf4b0928f9d4a",
+      "properties": {
+        "isBreakable": true,
+        "isLamp": true,
+        "isAllowedOnQueue": true,
+        "isAllowedOnSlope": true,
+        "renderAs": "lamp"
+      }
+    },
+    {
+      "identifier": "rct2tt.footpath_item.medbench",
+      "referenceSha256": "7a06ed741aaa555a6e84ccaa26da086a2055cd33ae878b8163695d5024b875f8",
+      "properties": {
+        "isBench": true,
+        "isBreakable": true,
+        "renderAs": "bench"
+      }
+    }
+  ]
+}

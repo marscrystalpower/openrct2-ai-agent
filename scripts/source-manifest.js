@@ -5,15 +5,16 @@ const fs = require('node:fs'), path = require('node:path'), crypto = require('no
 // Only public executable inputs belong here. Authentication, configuration,
 // Git metadata, local game state and generated bundles are deliberately absent.
 const SOURCE_FILES = Object.freeze([
-    'package.json', 'cli.js', 'src/core.js', 'src/plugin.js', 'src/track-guard.js', 'src/money.js', 'src/ride-inspector.js',
+    'package.json', 'cli.js', 'src/core.js', 'src/plugin.js', 'src/track-guard.js', 'src/money.js', 'src/ride-inspector.js', 'src/ride-auditor.js', 'src/pricing-inspector.js', 'src/path-furniture.js', 'src/amenity-inspector.js', 'src/path-inspector.js', 'src/access-inspector.js', 'src/access-monitor.js',
     'scripts/build.js', 'scripts/compatibility.json', 'scripts/colour-palette.js',
-    'scripts/track-support.js', 'scripts/display-settings.js', 'scripts/source-manifest.js',
+    'scripts/track-support.js', 'scripts/access-support.js', 'scripts/furniture-support.js', 'scripts/footpath-additions-reference.json', 'scripts/pricing-support.js', 'scripts/display-settings.js', 'scripts/source-manifest.js',
     'generated/actions.json', 'generated/colours.json', 'generated/track-names.json',
-    'generated/track-support.json'
+    'generated/track-support.json', 'generated/access-support.json', 'generated/furniture-support.json', 'generated/pricing-support.json'
 ].sort());
 const CAPABILITIES = Object.freeze([
     'native-research-bitmap-v1', 'path-object-family-v1', 'normal-track-support-v1',
-    'palette-74-v1', 'native-currency-format-v1', 'ride-inspection-v1'
+    'palette-74-v1', 'native-currency-format-v1', 'ride-inspection-v1', 'path-inspection-v1', 'facility-access-v1',
+    'ride-design-review-v1', 'path-furniture-v1', 'pricing-guidance-v1', 'local-amenities-v1', 'outward-exit-amenities-v1', 'no-entry-banners-v1'
 ]);
 const hash = text => crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 const normalize = text => text.replace(/\r\n?/g, '\n');

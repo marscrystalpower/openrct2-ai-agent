@@ -38,3 +38,14 @@ test('ride prices, native query costs and receipt costs are formatted without ed
     assert.equal(stored.spentDisplay,undefined);assert.equal(stored.completed[0].result.costDisplay,undefined);assert.equal(stored.detail.remainingDisplay,undefined);
     assert.equal(m.enrich('receipt',null),null);
 });
+
+test('pricing recommendations preserve raw units and use native formatting throughout park and ride summaries',()=>{
+    const m=Money.create({formatString:(_token,value)=>'custom:'+value});
+    const pricing={items:[{currentPrice:10,stockCost:2,unitMargin:8,noPriceRefusalReference:30,nativeValues:{base:30,hot:30,cold:30},valueRange:{min:30,max:30},recommendation:{candidatePrice:30,profitOptimum:null}}],warnings:[{currentPrice:10,referencePrice:30}]};
+    const raw={park:{cash:100},pricing:{configuredEntranceFee:0,recommendation:{candidatePrice:null}},rideReview:{rides:[{pricing}],observations:pricing.warnings}};
+    const out=m.enrich('park',raw),item=out.rideReview.rides[0].pricing.items[0];
+    assert.equal(item.currentPrice,10);assert.equal(item.moneyDisplay.unitMargin,'custom:8');assert.equal(item.nativeValues.moneyDisplay.base,'custom:30');
+    assert.equal(item.recommendation.moneyDisplay.candidatePrice,'custom:30');assert.equal(item.recommendation.profitOptimum,null);
+    assert.equal(out.pricing.recommendation.moneyDisplay.candidatePrice,null);assert.equal(out.rideReview.observations[0].moneyDisplay.referencePrice,'custom:30');
+    assert.equal(pricing.items[0].moneyDisplay,undefined);assert.equal(m.enrich('ride',{pricing}).pricing.items[0].moneyDisplay.currentPrice,'custom:10');
+});
