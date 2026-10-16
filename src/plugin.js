@@ -22,6 +22,17 @@
         function allowed(req){playable();if(!armed) error('Bridge is read-only; arm this session first');if(req.session!==session) error('Stale or missing session');}
         function compatible(){if(context.apiVersion!==BRIDGE_INFO.api)error('Bridge requires OpenRCT2 v'+BRIDGE_INFO.openrct2+' / API '+BRIDGE_INFO.api+'; API version is '+context.apiVersion);}
         function pick(obj,keys){var result={};keys.forEach(function(k){try{if(obj[k]!==undefined){var v=obj[k];result[k]=(typeof v==='number' && !Number.isFinite(v)) || (typeof v==='number' && Math.abs(v)>Number.MAX_SAFE_INTEGER)?null:v;}}catch(e){result[k]=null;}});return result;}
+        function scenarioView(){
+            var description=null,truncated=false;
+            try{var details=scenario.details;if(typeof details==='string')description=details;}catch(ignored){}
+            if(description!==null&&description.length>16384){
+                var end=16384,last=description.charCodeAt(end-1);
+                if(last>=0xD800&&last<=0xDBFF)end--;
+                description=description.slice(0,end);truncated=true;
+            }
+            return Object.assign(pick(scenario,['name','status']),{description:description,descriptionTruncated:truncated,
+                objective:pick(scenario.objective||{},['type','guests','year','length','excitement','parkValue','monthlyIncome'])});
+        }
         function unknownDesign(reason){return {status:'unknown',complete:false,truncated:true,observations:[],unavailable:[reason],track:{segmentsChecked:0,counts:null},detailsOperation:'ride'};}
         function designReview(r,budget){
             if(context.apiVersion!==BRIDGE_INFO.api)return unknownDesign('Ride review requires the pinned scripting API');
@@ -232,7 +243,7 @@
                 var capture={filename:'agent-'+newSession()+'.png',width:C.integer(a.width===undefined?1600:a.width,'width',320,2560),height:C.integer(a.height===undefined?1000:a.height,'height',240,1600),zoom:C.integer(a.zoom===undefined?1:a.zoom,'zoom',0,3),rotation:C.integer(a.rotation===undefined?0:a.rotation,'rotation',0,3),position:{x:C.integer(a.x===undefined?map.size.x*16:a.x,'world x',0,map.size.x*32-1),y:C.integer(a.y===undefined?map.size.y*16:a.y,'world y',0,map.size.y*32-1)}};
                 context.captureImage(capture);return {filename:capture.filename,directory:'user-data/screenshot',options:capture};
             }
-            case 'park':return {session:session,paused:context.paused,speed:context.gameSpeed,mapSize:map.size,access:context.apiVersion===BRIDGE_INFO.api?access.overview():{status:'unknown',complete:false,unavailable:['Access audit requires the pinned scripting API']},rideReview:parkRideReview(),pricing:parkPricingReview(),park:Object.assign(pick(park,['name','cash','rating','bankLoan','maxBankLoan','entranceFee','guests','value','companyValue','suggestedGuestMaximum']),{messages:(park.messages||[]).map(function(m){return pick(m,['type','subject','text','month','tickCount','isArchived']);})}),scenario:Object.assign(pick(scenario,['name','status']),{objective:pick(scenario.objective||{},['type','guests','year','length','excitement','parkValue','monthlyIncome'])}),date:pick(date,['monthsElapsed','month','day'])};
+            case 'park':return {session:session,paused:context.paused,speed:context.gameSpeed,mapSize:map.size,access:context.apiVersion===BRIDGE_INFO.api?access.overview():{status:'unknown',complete:false,unavailable:['Access audit requires the pinned scripting API']},rideReview:parkRideReview(),pricing:parkPricingReview(),park:Object.assign(pick(park,['name','cash','rating','bankLoan','maxBankLoan','entranceFee','guests','value','companyValue','suggestedGuestMaximum']),{messages:(park.messages||[]).map(function(m){return pick(m,['type','subject','text','month','tickCount','isArchived']);})}),scenario:scenarioView(),date:pick(date,['monthsElapsed','month','day'])};
             case 'rides':{if(context.apiVersion===BRIDGE_INFO.api)access.overview();var reviewBudget={remaining:16384};return map.rides.map(function(r){return rideView(r,reviewBudget);});}
             case 'ride':{var inspectedRide=getRide(a.ride);if(context.apiVersion===BRIDGE_INFO.api)access.overview();return Object.assign(rideView(inspectedRide),{inspection:BridgeRideInspector.inspect(inspectedRide,map)});}
             case 'path.inspect':compatible();return BridgePathInspector.inspect(a,map,furnitureOptions);
