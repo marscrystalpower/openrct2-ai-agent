@@ -14,7 +14,7 @@ const SOURCE_FILES = Object.freeze([
 const CAPABILITIES = Object.freeze([
     'native-research-bitmap-v1', 'path-object-family-v1', 'normal-track-support-v1',
     'palette-74-v1', 'native-currency-format-v1', 'ride-inspection-v1', 'path-inspection-v1', 'facility-access-v1',
-    'ride-design-review-v1', 'path-furniture-v1', 'pricing-guidance-v1', 'local-amenities-v1', 'outward-exit-amenities-v1', 'no-entry-banners-v1'
+    'ride-design-review-v1', 'path-furniture-v1', 'pricing-guidance-v1', 'local-amenities-v1', 'outward-exit-amenities-v1', 'no-entry-banners-v1', 'scenario-description-v1'
 ]);
 const hash = text => crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 const normalize = text => text.replace(/\r\n?/g, '\n');

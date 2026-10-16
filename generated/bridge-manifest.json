@@ -1,8 +1,8 @@
 {
-  "version": "0.1.9",
+  "version": "0.1.10",
   "engineVersion": "0.5.6",
   "api": 124,
-  "sourceHash": "0b5f2c84892e30da333600418dab07069fbfc32c8800431ef0cc571c57cb09b7",
+  "sourceHash": "b46ab826465297af1c5616182107ee90545c68e04eb4839adc12ce02f4a1dbbb",
   "files": {
     "cli.js": "b988ad514ec0f33da7ccbbb22e86d548d977e80c2ea25cf0accce8164aa08d34",
     "generated/access-support.json": "af52e44b056ffc624e56ee01be21d37d8a7c97fc66a11f81c427df905e641d13",
@@ -12,7 +12,7 @@
     "generated/pricing-support.json": "0a8152198cf1adbe5bad824213e4d67075c43b15172c5553a4263a9c4aa85d79",
     "generated/track-names.json": "80cd49d616d0af71aa88e8dc96728a6c0c4ded531a452ba1145ba5e2dea419f8",
     "generated/track-support.json": "2d470fc7dd642dcd94df30e79106f140514a06835cd1fe2293f8f4f0e8a98904",
-    "package.json": "70b740293bc746b9c5d239f28c097943d2f2be1845e50d1a664bf99e56291043",
+    "package.json": "757e37cc6948159e0884f479c6d744edc6019efe809f3015f98f2af6e398e596",
     "scripts/access-support.js": "4f242b1a5595c85780fc7a0174084d259d7c6d6223cf603175a4c5bd3a177482",
     "scripts/build.js": "e4163775182017b3dfa02a0ccf3041175233c35bebce164b1546ecb174459162",
     "scripts/colour-palette.js": "d182e30f6ecc58bc73dbc893e0e661f164fa577a14ce6b7c75acfb1faa6f98ac",
@@ -21,7 +21,7 @@
     "scripts/footpath-additions-reference.json": "6854fe835d3b540aa349c52e36518fa08c5d792bfecf6a6e0715f0ee1dddff03",
     "scripts/furniture-support.js": "c52548cbadaf38314a2a329945d1e92506732a24659d52c13d274d9ebf31c44a",
     "scripts/pricing-support.js": "9d07c03b6a828ffe31eb8b79dd81eefccff79e21d302e520be9f86d33d574b75",
-    "scripts/source-manifest.js": "c5ca8a72d0eaa0760036ea39c5b0d2054d8d33dc80abf970b40f3ed0e47b6553",
+    "scripts/source-manifest.js": "89d4225295ed5049d8dc50ed76cff00e004d1ff00cd4077aeb2feaeb11cb0d78",
     "scripts/track-support.js": "2431dbbf413ddc049ae13b283b5dc68528a20c8fcff5b36a01a9ffb0584adfc6",
     "src/access-inspector.js": "eb5ffdfbca08a46180e17fb30b6415d93379d3aa3f60ca8228761c9f52b6673a",
     "src/access-monitor.js": "567491baaef91aa5eb03a6c89a6c308e6eb1cec7c764c0d412a3e77d193950c1",
@@ -30,7 +30,7 @@
     "src/money.js": "52ed518003280a85d4aaa63b62da3d2bd06230bf57d08967df4a0b6de5ebf7d2",
     "src/path-furniture.js": "c2e4b59d89a32905ea251b0dba24ff73a5fdedacdf05e05ad857d4983159c9c0",
     "src/path-inspector.js": "9e49f466a7050de95386173f40d41601b73407dc709ce583c6b048278e920a33",
-    "src/plugin.js": "cee6f909ce60152dee4a7fbcf2bd2429ea659924c0f3cc280cfb1cadfcf1afa1",
+    "src/plugin.js": "4fb91f3f74b2523cacbcf1d6fe70bf678a05874672dd15235aca37fcf1c413a6",
     "src/pricing-inspector.js": "198619cf43a6bfa0d0fce8005643a8f23b5b1bd2d073ba7ee2d4332d78a19737",
     "src/ride-auditor.js": "e9bd422957f3c71c91b3a82f3e5a7a172f89dcabc7045666c0b4c6fd24961b9a",
     "src/ride-inspector.js": "975e71a1b2e37564ecf0cb7d35a267d7974b4679c2ab3657ab985d11bf004aaf",
@@ -50,6 +50,7 @@
     "pricing-guidance-v1",
     "local-amenities-v1",
     "outward-exit-amenities-v1",
-    "no-entry-banners-v1"
+    "no-entry-banners-v1",
+    "scenario-description-v1"
   ]
 }
